@@ -7,10 +7,22 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessMove {
+    ChessPosition start;
+    ChessPosition end;
+    ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
+        this.start = startPosition;
+        this.end = endPosition;
+        this.promotionPiece = promotionPiece;
     }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this.start = startPosition;
+        this.end = endPosition;
+    }
+
 
     /**
      * @return ChessPosition of starting location
