@@ -69,6 +69,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (this.getPieceType() == PieceType.BISHOP) {
             return PieceMovesCalculator.getBishopMoves(board, myPosition);
+        } else if (this.getPieceType() == PieceType.KING) {
+            return PieceMovesCalculator.getKingMoves(board, myPosition);
         } else {
             throw new RuntimeException("Not implemented");
         }

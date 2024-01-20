@@ -86,7 +86,22 @@ public class PieceMovesCalculator {
                 break;
             }
         }
+        return moves;
+    }
 
+    public static Collection<ChessMove> getKingMoves(ChessBoard board,
+                                                       ChessPosition position) {
+        List<ChessMove> moves = new ArrayList<>();
+        /**Top row**/
+        for (int row = position.getRow() - 1; row < position.getRow() + 2; row++) {
+            for (int col = position.getColumn() - 1; col < position.getColumn() + 2; col++) {
+                if (row < 0 || col < 0 || row > 8 || col > 8) { break;}
+                ChessPosition proposedPosition = new ChessPosition(row, col);
+                if (board.getPiece(proposedPosition) == null || board.getPiece(proposedPosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                    moves.add(new ChessMove(position, proposedPosition));
+                }
+            }
+        }
         return moves;
 
     }
