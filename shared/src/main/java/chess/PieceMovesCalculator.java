@@ -17,6 +17,13 @@ public class PieceMovesCalculator {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
                 moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
             }
         }
 
@@ -30,6 +37,13 @@ public class PieceMovesCalculator {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
                 moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
             }
         }
 
@@ -43,6 +57,13 @@ public class PieceMovesCalculator {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
                 moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
             }
         }
 
@@ -56,6 +77,13 @@ public class PieceMovesCalculator {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
                 moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
             }
         }
 
