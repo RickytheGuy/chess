@@ -72,7 +72,9 @@ public class ChessPiece {
         } else if (this.getPieceType() == PieceType.KING) {
             return PieceMovesCalculator.getKingMoves(board, myPosition);
         } else if (this.getPieceType() == PieceType.KNIGHT) {
-        return PieceMovesCalculator.getKnightMoves(board, myPosition);
+            return PieceMovesCalculator.getKnightMoves(board, myPosition);
+        } else if (this.getPieceType() == PieceType.PAWN) {
+                return PieceMovesCalculator.getPawnMoves(board, myPosition);
         } else {
             throw new RuntimeException("Not implemented");
         }

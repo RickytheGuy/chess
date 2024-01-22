@@ -179,4 +179,31 @@ public class PieceMovesCalculator {
         return moves;
     }
 
+    public static Collection<ChessMove> getPawnMoves(ChessBoard board,
+                                                     ChessPosition position) {
+        List<ChessMove> moves = new ArrayList<>();
+        int direction = 1;
+        if (board.getPiece(position).getTeamColor() == ChessGame.TeamColor.BLACK) {
+            direction = -1;
+        }
+        int row = position.getRow();
+        int col = position.getColumn();
+
+        ChessPosition proposedPosition = new ChessPosition(row + direction, col);
+        // Forward
+        if (board.getPiece(proposedPosition) == null) {
+            moves.add(new ChessMove(position, proposedPosition));
+        }
+
+        // Double move
+        if ((row == 7 && direction == -1) || (row == 2 && direction == 1)) {
+            proposedPosition = new ChessPosition(row + (direction * 2), col);
+            // Forward
+            if (board.getPiece(proposedPosition) == null) {
+                moves.add(new ChessMove(position, proposedPosition));
+            }
+        }
+        return moves;
+    }
+
 }
