@@ -249,4 +249,80 @@ public class PieceMovesCalculator {
         return moves;
     }
 
+    public static Collection<ChessMove> getQueenMoves(ChessBoard board,
+                                                       ChessPosition position) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        moves = getRookMoves(board, position);
+        moves.addAll(getBishopMoves(board, position));
+        return moves;
+    }
+
+    public static Collection<ChessMove> getRookMoves(ChessBoard board,
+                                                      ChessPosition position) {
+        List<ChessMove> moves = new ArrayList<>();
+        /**Down **/
+        int col = position.getColumn();
+        for (int row = position.getRow() - 1; row > 0; row--) {
+            ChessPosition proposedPosition = new ChessPosition(row, col);
+            if (board.getPiece(proposedPosition) == null) {
+                moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
+            }
+        }
+
+        /**Up**/
+        for (int row = position.getRow() + 1; row < 9; row++) {
+            ChessPosition proposedPosition = new ChessPosition(row, col);
+            if (board.getPiece(proposedPosition) == null) {
+                moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
+            }
+        }
+
+        /**Right**/
+        int row = position.getRow();
+        for (col = position.getColumn() + 1; col < 9; col++) {
+            ChessPosition proposedPosition = new ChessPosition(row, col);
+            if (board.getPiece(proposedPosition) == null) {
+                moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
+            }
+        }
+
+        /**Left**/
+        for (col = position.getColumn() -1; col > 0; col--) {
+            ChessPosition proposedPosition = new ChessPosition(row, col);
+            if (board.getPiece(proposedPosition) == null) {
+                moves.add(new ChessMove(position, proposedPosition));
+            } else if (board.getPiece(proposedPosition).getTeamColor() == board.getPiece(position).getTeamColor()) {
+                // If a piece of the same color is in the way, stop movement
+                break;
+            } else {
+                // Allow this piece to be captured, and no more
+                moves.add(new ChessMove(position, proposedPosition));
+                break;
+            }
+        }        /**Right and down**/
+
+        return moves;
+    }
+
 }
