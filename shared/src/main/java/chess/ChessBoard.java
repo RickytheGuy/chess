@@ -24,6 +24,12 @@ public class ChessBoard {
         this.chessboard[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
+    public ChessPiece popPiece(ChessPosition position){
+        ChessPiece piece = getPiece(position);
+        this.chessboard[position.getRow() - 1][position.getColumn() - 1] = null;
+        return piece;
+    }
+
     public void addPieceUsingRowCol(int row, int col, ChessPiece piece){
         this.chessboard[row][col] = piece;
     }
@@ -83,5 +89,20 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(chessboard);
+    }
+
+    public void to_string() {
+        System.out.print("|");
+        for (int i = chessboard.length - 1; i >= 0; i--) {
+            for (int j = 0; j < chessboard[i].length; j++) {
+                ChessPiece value = chessboard[i][j];
+                if (value == null) {
+                    System.out.print(" |");
+                } else {
+                    System.out.print(value + "|");
+                }
+            }
+            System.out.println(); // Move to the next line after each row
+        }
     }
 }

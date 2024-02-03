@@ -83,4 +83,33 @@ public class ChessPiece {
             throw new RuntimeException("Not implemented");
         }
     }
+
+    @Override
+    public String toString() {
+        if (pieceType == PieceType.BISHOP) {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "B";
+            } else { return "b"; }
+        } else if (pieceType == PieceType.PAWN) {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "P";
+            } else { return "p"; }
+        } else if (pieceType == PieceType.ROOK) {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "R";
+            } else { return "r"; }
+        } else if (pieceType == PieceType.QUEEN) {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "Q";
+            } else { return "q"; }
+        } else if (pieceType == PieceType.KNIGHT) {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "N";
+            } else { return "n"; }
+        } else {
+            if (teamColor == ChessGame.TeamColor.WHITE ) {
+                return "K";
+            } else { return "k"; }
+        }
+    }
 }
