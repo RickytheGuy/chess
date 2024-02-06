@@ -41,6 +41,9 @@ public class ChessBoard implements Cloneable{
         return piece;
     }
 
+    public void remove_piece(ChessPosition pos) {
+        this.chessboard[pos.getRow() - 1][pos.getColumn() - 1] = null;
+    }
     public void addPieceUsingRowCol(int row, int col, ChessPiece piece){
         this.chessboard[row][col] = piece;
     }

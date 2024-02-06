@@ -189,64 +189,64 @@ public class PieceMovesCalculator {
         }
         int row = position.getRow();
         int col = position.getColumn();
+        if (row + direction < 9 && row + direction > 0) {
+            ChessPosition proposedPosition = new ChessPosition(row + direction, col);
+            // Forward
+            if (board.getPiece(proposedPosition) == null) {
+                // Promotions
+                if ((row == 7 && direction == 1) || (row == 2 && direction == -1)) {
+                    if (board.getPiece(proposedPosition) == null) {
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
+                    }
+                } else {
+                    moves.add(new ChessMove(position, proposedPosition));
+                }
+            }
 
-        ChessPosition proposedPosition = new ChessPosition(row + direction, col);
-        // Forward
-        if (board.getPiece(proposedPosition) == null) {
-            // Promotions
+            // Captures and promotions
             if ((row == 7 && direction == 1) || (row == 2 && direction == -1)) {
-                proposedPosition = new ChessPosition(row + direction , col);
-                if (board.getPiece(proposedPosition) == null) {
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
+                if (col - 1 > 0) {
+                    proposedPosition = new ChessPosition(row + direction, col - 1);
+                    if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
+                    }
                 }
+                if (col + 1 < 9) {
+                    proposedPosition = new ChessPosition(row + direction, col + 1);
+                    if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
+                        moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
+                    }
+                }
+
             } else {
-                moves.add(new ChessMove(position, proposedPosition));
-            }
-        }
-
-        // Captures and promotions
-        if ((row == 7 && direction == 1) || (row == 2 && direction == -1)) {
-            if (col -1 > 0) {
-                proposedPosition = new ChessPosition(row + direction , col - 1);
-                if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
+                // Captures
+                if (col - 1 > 0) {
+                    proposedPosition = new ChessPosition(row + direction, col - 1);
+                    if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
+                        moves.add(new ChessMove(position, proposedPosition));
+                    }
                 }
-            }
-            if (col +1 <9) {
-                proposedPosition = new ChessPosition(row + direction, col + 1);
-                if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, proposedPosition, ChessPiece.PieceType.KNIGHT));
-                }
-            }
-
-        } else {
-            // Captures
-            if (col -1 > 0) {
-                proposedPosition = new ChessPosition(row + direction, col - 1);
-                if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
-                    moves.add(new ChessMove(position, proposedPosition));
-                }
-            }
-            if (col + 1 < 9) {
-                proposedPosition = new ChessPosition(row + direction, col + 1);
-                if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
-                    moves.add(new ChessMove(position, proposedPosition));
+                if (col + 1 < 9) {
+                    proposedPosition = new ChessPosition(row + direction, col + 1);
+                    if (board.getPiece(proposedPosition) != null && board.getPiece(proposedPosition).getTeamColor() != my_color) {
+                        moves.add(new ChessMove(position, proposedPosition));
+                    }
                 }
             }
         }
 
         // Double move
         if ((row == 7 && direction == -1) || (row == 2 && direction == 1)) {
-            proposedPosition = new ChessPosition(row + (direction * 2), col);
+            ChessPosition proposedPosition = new ChessPosition(row + (direction * 2), col);
             // Forward
             if (board.getPiece(proposedPosition) == null && board.getPiece(new ChessPosition(row + direction, col)) == null) {
                 moves.add(new ChessMove(position, proposedPosition));
