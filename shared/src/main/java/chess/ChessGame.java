@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -60,9 +61,31 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // If this move is for the other team, stop
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != this.teams_turn) {
+            throw new InvalidMoveException();
+        }
+        // check if the piece can move to that square with no other restrictions...
         if (board.getPiece(move.getStartPosition()).pieceMoves(board, move.getStartPosition()).contains(move) ) {
+            // If the king is in check...
+            if (isInCheck(this.teams_turn)) {
+                // Create a new board with this move done...
+                ChessBoard board_copy = (ChessBoard) this.board.clone();
+                ChessPiece piece = board_copy.popPiece(move.getStartPosition());
+                board_copy.addPiece(move.getEndPosition(), piece);
+
+                // ... and check if the new board's king is in check
+                if (isInBoardCheck(this.teams_turn, board_copy)) {
+                    throw new InvalidMoveException();
+                }
+            }
             ChessPiece piece = board.popPiece(move.getStartPosition());
             board.addPiece(move.getEndPosition(), piece);
+            if (TeamColor.WHITE == this.teams_turn) {
+                this.teams_turn = TeamColor.BLACK;
+            } else {
+                this.teams_turn = TeamColor.WHITE;
+            }
         } else {
             throw new InvalidMoveException();
         }
@@ -76,7 +99,55 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kings_pos = findKing(teamColor);
+        for (int row = 0; row < 8; row ++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = board.getPieceUsingRowCol(row, col);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    // Check this enemy piece and see if its valid moves include capturing the king
+                    Collection<ChessMove> moves = piece.pieceMoves(board, new ChessPosition(row+1, col+1));
+                    for (ChessMove move : moves) {
+                        if (move.getEndPosition().getRow() == kings_pos.getRow() && move.getEndPosition().getColumn() == kings_pos.getColumn()) {
+                            // If there is a move in the enemies moves that involve capturing this teams king, this king is in check
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isInBoardCheck(TeamColor teamColor, ChessBoard a_board) {
+        ChessPosition kings_pos = findKing(teamColor);
+        for (int row = 0; row < 8; row ++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = a_board.getPieceUsingRowCol(row, col);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    // Check this enemy piece and see if its valid moves include capturing the king
+                    Collection<ChessMove> moves = piece.pieceMoves(a_board, new ChessPosition(row+1, col+1));
+                    for (ChessMove move : moves) {
+                        if (move.getEndPosition().getRow() == kings_pos.getRow() && move.getEndPosition().getColumn() == kings_pos.getColumn()) {
+                            // If there is a move in the enemies moves that involve capturing this teams king, this king is in check
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    /**Finds the king of the given color on the board **/
+    public ChessPosition findKing(TeamColor color) {
+        for (int row = 0; row < 8; row ++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = board.getPieceUsingRowCol(row, col);
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color) {
+                    return new ChessPosition(row+1, col+1);
+                }
+            }
+        }
+        return null;
     }
 
     /**

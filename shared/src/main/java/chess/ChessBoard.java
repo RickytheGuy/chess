@@ -8,10 +8,21 @@ import java.util.Arrays;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable{
     ChessPiece[][] chessboard = new ChessPiece[8][8];
     public ChessBoard() {
         
+    }
+
+    @Override
+    protected ChessBoard clone() {
+        ChessBoard clone = new ChessBoard();
+        // Perform deep copy of the 2D array
+        clone.chessboard = new ChessPiece[this.chessboard.length][];
+        for (int i = 0; i < this.chessboard.length; i++) {
+            clone.chessboard[i] = this.chessboard[i].clone();
+        }
+        return clone;
     }
 
     /**
@@ -32,6 +43,10 @@ public class ChessBoard {
 
     public void addPieceUsingRowCol(int row, int col, ChessPiece piece){
         this.chessboard[row][col] = piece;
+    }
+
+    public ChessPiece getPieceUsingRowCol(int row, int col){
+        return this.chessboard[row][col];
     }
 
     /**
@@ -94,6 +109,7 @@ public class ChessBoard {
     public void to_string() {
         System.out.print("|");
         for (int i = chessboard.length - 1; i >= 0; i--) {
+            System.out.print("|");
             for (int j = 0; j < chessboard[i].length; j++) {
                 ChessPiece value = chessboard[i][j];
                 if (value == null) {

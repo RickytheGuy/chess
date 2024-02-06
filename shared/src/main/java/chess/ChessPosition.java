@@ -13,6 +13,7 @@ public class ChessPosition {
     private int col;
 
     public ChessPosition(int row, int col) {
+        // These represent the position in the 1 indexed grid
         this.row = row;
         this.col = col;
     }
