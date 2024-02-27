@@ -1,4 +1,5 @@
 package requests;
 
-public record DeleteRequest() {
+public record DeleteRequest(int status, String authToken, String username) {
 }
+

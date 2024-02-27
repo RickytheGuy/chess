@@ -6,8 +6,14 @@ import dataAccess.*;
 
 public class Server {
     private final GameDAO gameData = new MemoryGameDAO();
-    private final DeleteHandler deleteHandler = new DeleteHandler(gameData);
-    private final LoginHandler loginHandler = new LoginHandler(gameData);
+    private final UserDAO userData = new MemoryUserDAO();
+    private final AuthDAO authData = new MemoryAuthDAO();
+    private final DeleteHandler deleteHandler = new DeleteHandler(gameData, userData, authData);
+    private final LoginHandler loginHandler = new LoginHandler(userData, authData);
+    private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
+    private final LogoutHandler logoutHandler = new LogoutHandler(authData);
+    private final CreateGameHandler createGameHandler = new CreateGameHandler(userData, authData, gameData);
+    private final JoinGameHandler joinGameHandler = new JoinGameHandler(authData, gameData);
     public Server() {}
 
     public int run(int desiredPort) {
@@ -17,7 +23,13 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", deleteHandler::handleRequest);
-        Spark.post("/user", loginHandler::handleRequest);
+        Spark.delete("/session", logoutHandler::handleRequest);
+
+        Spark.post("/user", registerHandler::handleRequest);
+        Spark.post("/session", loginHandler::handleRequest);
+        Spark.post("/game", createGameHandler::handleRequest);
+
+        Spark.put("/game", joinGameHandler::handleRequest);
         Spark.awaitInitialization();
 
         return Spark.port();
