@@ -8,9 +8,13 @@ public class DeleteService {
     private final AuthDAO authData;
 
     public void clearAll() {
-        gameData.clearAll();
-        userData.clearAll();
-        authData.clearAll();
+        try {
+            gameData.clearAll();
+            userData.clearAll();
+            authData.clearAll();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
     }
 

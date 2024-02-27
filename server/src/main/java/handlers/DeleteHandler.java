@@ -17,11 +17,7 @@ public class DeleteHandler {
         this.deleteService = new DeleteService(gameData, userData, authData);
     }
     public Object handleRequest(Request request, Response response) {
-        try {
             deleteService.clearAll();
-        } catch (Exception e) {
-            return serializer.toJson(new ErrorResponse(500, e.toString()));
-        }
-        return serializer.toJson(new DeleteResponse(200, ""));
+            return serializer.toJson(new DeleteResponse(200, ""));
     }
 }

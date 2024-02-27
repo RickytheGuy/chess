@@ -2,6 +2,7 @@ package services;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import requests.ChessResponse;
 import requests.ErrorResponse;
 import requests.RegisterRequest;
 import requests.RegisterResponse;
@@ -16,13 +17,31 @@ public class RegisterService {
         this.userData = userData;
         this.authData = authData;
     }
-    public RegisterResponse register(RegisterRequest req) throws DataAccessException {
-
-        if (userData.getUser(req.username()) != null) {
-            throw new DataAccessException("Error: already taken");
+    public ChessResponse register(RegisterRequest req) {
+        if (req.username() == null || req.password() ==null) {
+            return new ErrorResponse(400, "Error: bad request");
         }
-        userData.addUser(req.username(), req.password(), req.email());
+        try {
+            if (userData.getUser(req.username()) != null) {
+                return new ErrorResponse(403, "Error: User already exists");
+            }
+        } catch (DataAccessException e) {
+            return new ErrorResponse(403, "Error: User already exists");
+        }
+
+
+        try {
+            userData.addUser(req.username(), req.password(), req.email());
+        } catch (DataAccessException e) {
+            return new ErrorResponse(500, "Error: Internal server error");
+        }
         authData.addAuth(req.username());
-        return new RegisterResponse(req.username(), authData.getAuth(req.username()));
+        String token;
+        try {
+            token = authData.getAuth(req.username());
+        } catch (DataAccessException e) {
+            return new ErrorResponse(500, "Error: Internal server error");
+        }
+        return new RegisterResponse(req.username(), token);
     }
 }

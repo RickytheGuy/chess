@@ -5,5 +5,7 @@ public interface AuthDAO {
 
     void addAuth(String username);
 
-    String getAuth(String username);
+    String getAuth(String username) throws DataAccessException;
+
+    void removeAuth(String authToken) throws DataAccessException;
 }

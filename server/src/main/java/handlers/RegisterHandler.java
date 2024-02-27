@@ -17,14 +17,14 @@ public class RegisterHandler {
     }
     public Object handleRequest(Request request, Response response) {
         RegisterRequest req =  serializer.fromJson(request.body(), RegisterRequest.class);
-
-        try {
-           RegisterResponse res = registerService.register(req);
-           return serializer.toJson(res);
-        } catch (DataAccessException e) {
-            return serializer.toJson(new ErrorResponse(500, e.toString()));
-        } catch (JsonIOException e) {
-            return serializer.toJson(new ErrorResponse(400, "Error: bad request"));
+        ChessResponse res = registerService.register(req);
+        if (res instanceof ErrorResponse) {
+            response.status(((ErrorResponse) res).status());
         }
+        else {
+            response.status(200);
+        }
+        return serializer.toJson(res);
+
     }
 }
