@@ -21,7 +21,7 @@ public class CreateGameHandler {
     public Object handleRequest(Request request, Response response) {
         String authToken = request.headers("Authorization");
         CreateGameRequest req =  serializer.fromJson(request.body(), CreateGameRequest.class);
-        ChessResponse res = createGameService.joinGame(req, authToken);
+        ChessResponse res = createGameService.createGame(req, authToken);
         if (res instanceof ErrorResponse) {
             response.status(((ErrorResponse) res).status());
         }

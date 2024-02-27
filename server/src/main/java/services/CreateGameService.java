@@ -20,9 +20,9 @@ public class CreateGameService {
         this.gameData = gameData;
     }
 
-    public ChessResponse joinGame(CreateGameRequest req, String authToken) {
+    public ChessResponse createGame(CreateGameRequest req, String authToken) {
         try {
-            authData.getAuth(authToken);
+            authData.getUserFromAuth(authToken);
         } catch (DataAccessException e) {
             return new ErrorResponse(401, "Error: unauthorized");
         }

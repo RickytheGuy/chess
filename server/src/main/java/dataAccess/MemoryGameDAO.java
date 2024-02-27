@@ -21,7 +21,7 @@ public class MemoryGameDAO implements GameDAO {
                 throw new DataAccessException("Error: game already exists");
             }
         }
-        data.add(new GameData(data.size(), "", "", gameName, new ChessGame()));
+        data.add(new GameData(data.size() + 1, null, null, gameName, new ChessGame()));
         return data.size();
     }
 
@@ -39,8 +39,8 @@ public class MemoryGameDAO implements GameDAO {
     public void addPlayerToGame(int gameID, String username, String playerColor) throws DataAccessException {
         for (GameData game : data) {
             if (game.gameId() == gameID) {
-                if (playerColor.equals("white")) {
-                    if (game.whiteUsername().isEmpty()) {
+                if (playerColor.equals("WHITE")) {
+                    if (game.whiteUsername() == null) {
                         data.add(new GameData(gameID, username, game.blackUsername(), game.gameName(), game.game()));
                         data.remove(game);
                         return;
@@ -48,7 +48,7 @@ public class MemoryGameDAO implements GameDAO {
                         throw new DataAccessException("Error: already taken");
                     }
                 } else {
-                    if (game.blackUsername().isEmpty()) {
+                    if (game.blackUsername() == null) {
                         data.add(new GameData(gameID, game.whiteUsername(), username, game.gameName(), game.game()));
                         data.remove(game);
                         return;
@@ -59,5 +59,10 @@ public class MemoryGameDAO implements GameDAO {
             }
         }
         throw new DataAccessException("Error: game does not exist");
+    }
+
+    @Override
+    public ArrayList<GameData> listGames() {
+        return data;
     }
 }

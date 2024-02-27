@@ -17,7 +17,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public String getAuth(String username) {
+    public String getAuth(String username) throws DataAccessException{
         // Reversed ensures we get the latest auth token
 
         for (int i = data.size() - 1; i >= 0; i--) {
@@ -25,7 +25,7 @@ public class MemoryAuthDAO implements AuthDAO {
                 return data.get(i).authToken();
             }
         }
-        return null;
+        throw new DataAccessException("Error: unauthorized");
     }
 
     @Override

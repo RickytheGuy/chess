@@ -28,11 +28,12 @@ public class JoinGameService {
         if (!gameData.gameExists(req.gameID())) {
             return new ErrorResponse(400, "Error: bad request");
         }
-
-        try {
-            gameData.addPlayerToGame(req.gameID(), username, req.playerColor());
-        } catch (DataAccessException e) {
-            return new ErrorResponse(403, e.getMessage());
+        if (req.playerColor() != null) {
+            try {
+                gameData.addPlayerToGame(req.gameID(), username, req.playerColor());
+            } catch (DataAccessException e) {
+                return new ErrorResponse(403, e.getMessage());
+            }
         }
         return new JoinGameResponse();
     }
