@@ -4,8 +4,9 @@ import model.*;
 public interface UserDAO {
     void createUser(String username, String password, String email) throws DataAccessException;
 
-    UserData getUser();
+    UserData getUser(String username);
 
-    void clear();
+    void clearAll();
 
+    void addUser(String username, String password, String email);
 }
