@@ -1,5 +1,15 @@
 package services;
 
+import dataAccess.GameDAO;
+
 public class DeleteService {
-    public void clearAll() {}
+    private final GameDAO gameData;
+
+    public void clearAll() {
+        gameData.clearAll();
+    }
+
+    public DeleteService(GameDAO gameData) {
+        this.gameData = gameData;
+    }
 }
