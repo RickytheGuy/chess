@@ -12,7 +12,8 @@ public class Server {
     private final LoginHandler loginHandler = new LoginHandler(userData, authData);
     private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
     private final LogoutHandler logoutHandler = new LogoutHandler(authData);
-    private final JoinGameHandler joinGameHandler = new JoinGameHandler(userData, authData, gameData);
+    private final CreateGameHandler createGameHandler = new CreateGameHandler(userData, authData, gameData);
+    private final JoinGameHandler joinGameHandler = new JoinGameHandler(authData, gameData);
     public Server() {}
 
     public int run(int desiredPort) {
@@ -26,7 +27,9 @@ public class Server {
 
         Spark.post("/user", registerHandler::handleRequest);
         Spark.post("/session", loginHandler::handleRequest);
-        Spark.post("/game", joinGameHandler::handleRequest);
+        Spark.post("/game", createGameHandler::handleRequest);
+
+        Spark.put("/game", joinGameHandler::handleRequest);
         Spark.awaitInitialization();
 
         return Spark.port();

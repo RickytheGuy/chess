@@ -1,4 +1,4 @@
 package requests;
 
-public record JoinGameRequest(String gameName) {
+public record JoinGameRequest(String playerColor, int gameID) {
 }

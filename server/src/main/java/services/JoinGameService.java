@@ -3,35 +3,37 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import requests.ChessResponse;
 import requests.ErrorResponse;
 import requests.JoinGameRequest;
 import requests.JoinGameResponse;
 
 public class JoinGameService {
-    private final UserDAO userData;
     private final AuthDAO authData;
     private final GameDAO gameData;
 
-    public JoinGameService(UserDAO userData, AuthDAO authData, GameDAO gameData) {
-        this.userData = userData;
+    public JoinGameService(AuthDAO authData, GameDAO gameData) {
         this.authData = authData;
         this.gameData = gameData;
     }
 
     public ChessResponse joinGame(JoinGameRequest req, String authToken) {
+        String username;
+        int gameID;
         try {
-            authData.getAuth(authToken);
+            username = authData.getUserFromAuth(authToken);
         } catch (DataAccessException e) {
             return new ErrorResponse(401, "Error: unauthorized");
         }
-        int gameID;
-        try {
-            gameID = gameData.addGame(req.gameName());
-        } catch (DataAccessException e) {
+        if (!gameData.gameExists(req.gameID())) {
             return new ErrorResponse(400, "Error: bad request");
         }
-        return new JoinGameResponse(gameID);
+
+        try {
+            gameData.addPlayerToGame(req.gameID(), username, req.playerColor());
+        } catch (DataAccessException e) {
+            return new ErrorResponse(403, e.getMessage());
+        }
+        return new JoinGameResponse();
     }
 }

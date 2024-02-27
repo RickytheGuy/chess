@@ -2,13 +2,10 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
-import dataAccess.UserDAO;
 import requests.ChessResponse;
 import requests.ErrorResponse;
 import requests.LogoutRequest;
-import requests.RegisterRequest;
 import services.LogoutService;
-import services.RegisterService;
 import spark.Request;
 import spark.Response;
 
@@ -19,7 +16,7 @@ public class LogoutHandler {
         logoutService = new LogoutService(authData);
     }
     public Object handleRequest(Request request, Response response) {
-        LogoutRequest req =  serializer.fromJson(request.body(), LogoutRequest.class);
+        LogoutRequest req = new LogoutRequest(request.headers("Authorization"));
         ChessResponse res = logoutService.logout(req);
         if (res instanceof ErrorResponse) {
             response.status(((ErrorResponse) res).status());

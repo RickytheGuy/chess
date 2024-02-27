@@ -1,4 +1,4 @@
 package requests;
 
-public record JoinGameResponse(int gameID) implements ChessResponse {
+public record JoinGameResponse() implements ChessResponse {
 }

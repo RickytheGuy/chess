@@ -8,4 +8,6 @@ public interface AuthDAO {
     String getAuth(String username) throws DataAccessException;
 
     void removeAuth(String authToken) throws DataAccessException;
+
+    String getUserFromAuth(String authToken) throws DataAccessException;
 }
