@@ -12,7 +12,7 @@ import spark.Response;
 
 public class JoinGameHandler {
     private final JoinGameService joinGameService;
-    private Gson serializer = new Gson();
+    private final Gson serializer = new Gson();
     public JoinGameHandler(AuthDAO authData, GameDAO gameData) {
         this.joinGameService = new JoinGameService(authData, gameData);
     }

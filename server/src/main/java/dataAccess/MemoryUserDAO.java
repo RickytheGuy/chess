@@ -46,4 +46,9 @@ public class MemoryUserDAO implements UserDAO{
         }
         return false;
     }
+
+    @Override
+    public int size() {
+        return data_list.size();
+    }
 }

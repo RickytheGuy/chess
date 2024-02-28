@@ -16,6 +16,9 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public int addGame(String gameName) throws DataAccessException{
+        if (gameName == null || gameName.equals("")) {
+            throw new DataAccessException("Error: bad request");
+        }
         for (GameData game : data) {
             if (game.gameName().equals(gameName)) {
                 throw new DataAccessException("Error: game already exists");

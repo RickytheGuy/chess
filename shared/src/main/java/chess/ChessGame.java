@@ -56,7 +56,7 @@ public class ChessGame {
         Collection<ChessMove> valid_moves = new ArrayList<>();
 
         for (ChessMove move : moves) {
-            ChessBoard board_copy = (ChessBoard) this.board.clone();
+            ChessBoard board_copy = this.board.clone();
             ChessPiece piece = board_copy.popPiece(move.getStartPosition());
             board_copy.addPiece(move.getEndPosition(), piece);
             // If the king is out of check, add to valid moves list
@@ -84,7 +84,7 @@ public class ChessGame {
             // If the king is in check...
             if (isInCheck(this.teams_turn)) {
                 // Create a new board with this move done...
-                ChessBoard board_copy = (ChessBoard) this.board.clone();
+                ChessBoard board_copy = this.board.clone();
                 ChessPiece piece = board_copy.popPiece(move.getStartPosition());
                 board_copy.addPiece(move.getEndPosition(), piece);
 
@@ -262,7 +262,7 @@ public class ChessGame {
                     if (moves != null) {
                         for (ChessMove move: moves) {
                             // Create a new board with this move done...
-                            ChessBoard board_copy = (ChessBoard) this.board.clone();
+                            ChessBoard board_copy = this.board.clone();
                             ChessPiece a_piece = board_copy.popPiece(move.getStartPosition());
                             board_copy.addPiece(move.getEndPosition(), a_piece);
                             // ...make sure king cannot be immediately captured

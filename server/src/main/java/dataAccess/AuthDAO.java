@@ -10,4 +10,6 @@ public interface AuthDAO {
     void removeAuth(String authToken) throws DataAccessException;
 
     String getUserFromAuth(String authToken) throws DataAccessException;
+
+    int size();
 }

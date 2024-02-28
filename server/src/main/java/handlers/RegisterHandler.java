@@ -11,7 +11,7 @@ import com.google.gson.JsonIOException;
 public class RegisterHandler {
 
     private final RegisterService registerService;
-    private Gson serializer = new Gson();
+    private final Gson serializer = new Gson();
     public RegisterHandler(UserDAO userData, AuthDAO authData) {
         registerService = new RegisterService(userData, authData);
     }

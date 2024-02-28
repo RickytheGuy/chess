@@ -3,10 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import requests.ChessResponse;
-import requests.ErrorResponse;
-import requests.JoinGameRequest;
-import requests.ListGameResponse;
+import requests.*;
 
 import java.util.List;
 
@@ -18,7 +15,7 @@ public class ListGameService {
         this.gameData = gameData;
     }
 
-    public ChessResponse listGames(JoinGameRequest req, String authToken) {
+    public ChessResponse listGames(ListGameRequest req, String authToken) {
         try {
             authData.getUserFromAuth(authToken);
         } catch (DataAccessException e) {

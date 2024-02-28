@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import model.GameData;
-import requests.ChessResponse;
-import requests.ErrorResponse;
-import requests.JoinGameRequest;
-import requests.ListGameResponse;
+import requests.*;
 import services.ListGameService;
 import spark.Request;
 import spark.Response;
@@ -20,7 +17,7 @@ public class ListGameHandler {
     }
     public Object handleRequest(Request request, Response response) {
         String authToken = request.headers("Authorization");
-        JoinGameRequest req =  serializer.fromJson(request.body(), JoinGameRequest.class);
+        ListGameRequest req =  serializer.fromJson(request.body(), ListGameRequest.class);
         ChessResponse res = listGameService.listGames(req, authToken);
 
         if (res instanceof ErrorResponse) {

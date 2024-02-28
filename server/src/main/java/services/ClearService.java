@@ -2,7 +2,7 @@ package services;
 
 import dataAccess.*;
 
-public class DeleteService {
+public class ClearService {
     private final GameDAO gameData;
     private final UserDAO userData;
     private final AuthDAO authData;
@@ -18,7 +18,7 @@ public class DeleteService {
 
     }
 
-    public DeleteService(GameDAO gameData, UserDAO userData, AuthDAO authData) {
+    public ClearService(GameDAO gameData, UserDAO userData, AuthDAO authData) {
         this.gameData = gameData;
         this.userData = userData;
         this.authData = authData;

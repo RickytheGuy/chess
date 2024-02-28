@@ -48,4 +48,9 @@ public class MemoryAuthDAO implements AuthDAO {
         }
         throw new DataAccessException("Error: unauthorized");
     }
+
+    @Override
+    public int size() {
+        return data.size();
+    }
 }

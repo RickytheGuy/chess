@@ -11,4 +11,6 @@ public interface UserDAO {
     void addUser(String username, String password, String email) throws DataAccessException;
 
     boolean userExists(String username);
+
+    int size();
 }

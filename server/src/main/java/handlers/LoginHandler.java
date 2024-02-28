@@ -1,18 +1,15 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
 import dataAccess.*;
 import requests.*;
-import services.DeleteService;
 import services.LoginService;
 import spark.Request;
 import spark.Response;
-import requests.*;
 
 public class LoginHandler {
     private final LoginService loginService ;
-    private Gson serializer = new Gson();
+    private final Gson serializer = new Gson();
 
     public LoginHandler(UserDAO userData, AuthDAO authData){
         this.loginService = new LoginService(userData, authData);

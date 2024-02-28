@@ -13,7 +13,7 @@ import spark.Response;
 
 public class CreateGameHandler {
     private final CreateGameService createGameService;
-    private Gson serializer = new Gson();
+    private final Gson serializer = new Gson();
     public CreateGameHandler(UserDAO userData, AuthDAO authData, GameDAO gameData){
         this.createGameService = new CreateGameService(userData, authData, gameData);
     }

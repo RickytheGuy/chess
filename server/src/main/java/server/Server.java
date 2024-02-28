@@ -8,7 +8,7 @@ public class Server {
     private final GameDAO gameData = new MemoryGameDAO();
     private final UserDAO userData = new MemoryUserDAO();
     private final AuthDAO authData = new MemoryAuthDAO();
-    private final DeleteHandler deleteHandler = new DeleteHandler(gameData, userData, authData);
+    private final ClearHandler clearHandler = new ClearHandler(gameData, userData, authData);
     private final LoginHandler loginHandler = new LoginHandler(userData, authData);
     private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
     private final LogoutHandler logoutHandler = new LogoutHandler(authData);
@@ -22,7 +22,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", deleteHandler::handleRequest);
+        Spark.delete("/db", clearHandler::handleRequest);
         Spark.delete("/session", logoutHandler::handleRequest);
 
         Spark.post("/user", registerHandler::handleRequest);

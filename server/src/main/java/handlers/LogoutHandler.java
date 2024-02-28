@@ -11,7 +11,7 @@ import spark.Response;
 
 public class LogoutHandler {
     private final LogoutService logoutService;
-    private Gson serializer = new Gson();
+    private final Gson serializer = new Gson();
     public LogoutHandler(AuthDAO authData) {
         logoutService = new LogoutService(authData);
     }
