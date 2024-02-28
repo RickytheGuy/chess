@@ -2,7 +2,6 @@ package services;
 
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
 import requests.ChessResponse;
 import requests.ErrorResponse;
 import requests.LogoutRequest;

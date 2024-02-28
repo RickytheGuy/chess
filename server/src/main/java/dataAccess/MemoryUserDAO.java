@@ -7,15 +7,6 @@ import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO{
     ArrayList<UserData> data_list = new ArrayList<>();
-    @Override
-    public void createUser(String username, String password, String email) throws DataAccessException {
-        for (UserData user: data_list) {
-            if (Objects.equals(user.username(), username)) {
-                throw new DataAccessException("Username already exists");
-            }
-        }
-
-    }
 
     @Override
     public UserData getUser(String username) {
@@ -35,16 +26,6 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public void addUser(String username, String password, String email) {
         data_list.add(new UserData(username, password, email));
-    }
-
-    @Override
-    public boolean userExists(String username) {
-        for (UserData user: data_list) {
-            if (Objects.equals(user.username(), username)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

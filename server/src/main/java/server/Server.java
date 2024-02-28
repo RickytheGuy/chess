@@ -12,7 +12,7 @@ public class Server {
     private final LoginHandler loginHandler = new LoginHandler(userData, authData);
     private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
     private final LogoutHandler logoutHandler = new LogoutHandler(authData);
-    private final CreateGameHandler createGameHandler = new CreateGameHandler(userData, authData, gameData);
+    private final CreateGameHandler createGameHandler = new CreateGameHandler(authData, gameData);
     private final JoinGameHandler joinGameHandler = new JoinGameHandler(authData, gameData);
     public Server() {}
 

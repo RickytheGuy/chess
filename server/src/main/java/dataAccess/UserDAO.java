@@ -2,15 +2,12 @@ package dataAccess;
 import model.*;
 
 public interface UserDAO {
-    void createUser(String username, String password, String email) throws DataAccessException;
 
-    UserData getUser(String username) throws DataAccessException;
+    UserData getUser(String username);
 
-    void clearAll() throws DataAccessException;
+    void clearAll();
 
-    void addUser(String username, String password, String email) throws DataAccessException;
-
-    boolean userExists(String username);
+    void addUser(String username, String password, String email);
 
     int size();
 }

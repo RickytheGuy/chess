@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class MemoryGameDAO implements GameDAO {
     ArrayList<GameData> data = new ArrayList<>();
-    // white username: 0, black username: 1, game name: 2, game: 3
 
     @Override
     public void clearAll() {
@@ -31,7 +30,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public boolean gameExists(int gameID) {
         for (GameData game : data) {
-            if (game.gameId() == gameID) {
+            if (game.gameID() == gameID) {
                 return true;
             }
         }
@@ -41,7 +40,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void addPlayerToGame(int gameID, String username, String playerColor) throws DataAccessException {
         for (GameData game : data) {
-            if (game.gameId() == gameID) {
+            if (game.gameID() == gameID) {
                 if (playerColor.equals("WHITE")) {
                     if (game.whiteUsername() == null) {
                         data.add(new GameData(gameID, username, game.blackUsername(), game.gameName(), game.game()));

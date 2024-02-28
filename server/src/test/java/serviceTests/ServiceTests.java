@@ -3,11 +3,6 @@ package serviceTests;
 import dataAccess.*;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import dataAccess.MemoryGameDAO;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import requests.ChessResponse;
 import requests.*;
 import services.*;
 
@@ -64,7 +59,6 @@ public class ServiceTests {
 
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse = registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
-
         // Try to register with same username
         registerResponse = registerService.register(new RegisterRequest("testUser", "newPassword", "whatever"));
 
@@ -139,7 +133,7 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse = registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
         ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
 
         assert(createGameResponse instanceof CreateGameResponse);
@@ -156,7 +150,7 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse = registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
         // Try to create game with null game name
         ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest(null), ((RegisterResponse) registerResponse).authToken());
 
@@ -175,7 +169,7 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse = registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
         ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
 
         JoinGameService joinGameService = new JoinGameService(authData, gameData);
@@ -193,8 +187,8 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse = registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
-        ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
+        createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
 
         JoinGameService joinGameService = new JoinGameService(authData, gameData);
         // Try to join game that doesn't exist
@@ -217,7 +211,7 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse =  registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
         ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
         createGameResponse = createGameService.createGame(new CreateGameRequest("Game2"), ((RegisterResponse) registerResponse).authToken());
 
@@ -230,11 +224,11 @@ public class ServiceTests {
         assert(listGamesResponse instanceof ListGameResponse);
         ArrayList<GameData> games = ((ListGameResponse) listGamesResponse).games();
         assert(games.size() == 2);
-        assert(games.get(0).gameId() == 1);
+        assert(games.get(0).gameID() == 1);
         assert (games.get(0).gameName().equals("testGame"));
         assert(games.get(0).whiteUsername() == null);
         assert(games.get(0).blackUsername() == null);
-        assert(games.get(1).gameId() == 2);
+        assert(games.get(1).gameID() == 2);
         assert (games.get(1).gameName().equals("Game2"));
         assert(games.get(1).whiteUsername().equals("testUser"));
         assert(games.get(1).blackUsername() == null);
@@ -251,9 +245,8 @@ public class ServiceTests {
         RegisterService registerService = new RegisterService(userData, authData);
         ChessResponse registerResponse =  registerService.register(new RegisterRequest("testUser", "testPassword", "testEmail"));
 
-        CreateGameService createGameService = new CreateGameService(userData, authData, gameData);
-        ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("testGame"), ((RegisterResponse) registerResponse).authToken());
-        createGameResponse = createGameService.createGame(new CreateGameRequest("Game2"), ((RegisterResponse) registerResponse).authToken());
+        CreateGameService createGameService = new CreateGameService(authData, gameData);
+        ChessResponse createGameResponse = createGameService.createGame(new CreateGameRequest("Game2"), ((RegisterResponse) registerResponse).authToken());
 
 
         JoinGameService joinGameService = new JoinGameService(authData, gameData);

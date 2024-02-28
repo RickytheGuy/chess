@@ -7,7 +7,6 @@ public class PieceMovesCalculator {
     public static Collection<ChessMove> getBishopMoves(ChessBoard board,
                                               ChessPosition position) {
         List<ChessMove> moves = new ArrayList<>();
-        /**Left and up**/
         int col = position.getColumn();
         for (int row = position.getRow() - 1; row > 0; row--) {
             col--;
@@ -27,7 +26,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Right and up**/
         col = position.getColumn();
         for (int row = position.getRow() - 1; row > 0; row--) {
             col++;
@@ -47,7 +45,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Left and down**/
         col = position.getColumn();
         for (int row = position.getRow() + 1; row < 9; row++) {
             col--;
@@ -67,7 +64,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Right and down**/
         col = position.getColumn();
         for (int row = position.getRow() + 1; row < 9; row++) {
             col++;
@@ -92,7 +88,6 @@ public class PieceMovesCalculator {
     public static Collection<ChessMove> getKingMoves(ChessBoard board,
                                                        ChessPosition position) {
         List<ChessMove> moves = new ArrayList<>();
-        /**Top row**/
         for (int row = position.getRow() - 1; row < position.getRow() + 2; row++) {
             for (int col = position.getColumn() - 1; col < position.getColumn() + 2; col++) {
                 if (row < 1 || col < 1 || row > 8 || col > 8) { break;}
@@ -259,8 +254,7 @@ public class PieceMovesCalculator {
 
     public static Collection<ChessMove> getQueenMoves(ChessBoard board,
                                                        ChessPosition position) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        moves = getRookMoves(board, position);
+        Collection<ChessMove> moves = getRookMoves(board, position);
         moves.addAll(getBishopMoves(board, position));
         return moves;
     }
@@ -268,7 +262,6 @@ public class PieceMovesCalculator {
     public static Collection<ChessMove> getRookMoves(ChessBoard board,
                                                       ChessPosition position) {
         List<ChessMove> moves = new ArrayList<>();
-        /**Down **/
         int col = position.getColumn();
         for (int row = position.getRow() - 1; row > 0; row--) {
             ChessPosition proposedPosition = new ChessPosition(row, col);
@@ -284,7 +277,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Up**/
         for (int row = position.getRow() + 1; row < 9; row++) {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
@@ -299,7 +291,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Right**/
         int row = position.getRow();
         for (col = position.getColumn() + 1; col < 9; col++) {
             ChessPosition proposedPosition = new ChessPosition(row, col);
@@ -315,7 +306,6 @@ public class PieceMovesCalculator {
             }
         }
 
-        /**Left**/
         for (col = position.getColumn() -1; col > 0; col--) {
             ChessPosition proposedPosition = new ChessPosition(row, col);
             if (board.getPiece(proposedPosition) == null) {
@@ -328,7 +318,7 @@ public class PieceMovesCalculator {
                 moves.add(new ChessMove(position, proposedPosition));
                 break;
             }
-        }        /**Right and down**/
+        }
 
         return moves;
     }

@@ -8,13 +8,9 @@ public class ClearService {
     private final AuthDAO authData;
 
     public void clearAll() {
-        try {
-            gameData.clearAll();
-            userData.clearAll();
-            authData.clearAll();
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+        gameData.clearAll();
+        userData.clearAll();
+        authData.clearAll();
 
     }
 

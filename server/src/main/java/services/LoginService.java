@@ -19,8 +19,6 @@ public class LoginService {
             if (!userData.getUser(username).password().equals(req.password())) {
                 return new ErrorResponse(401, "Error: unauthorized");
             }
-        } catch (DataAccessException e) {
-            return new ErrorResponse(401, "Error: unauthorized");
         } catch (NullPointerException e) {
             return new ErrorResponse(401, "Error: unauthorized");
         }

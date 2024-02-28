@@ -19,7 +19,6 @@ public class JoinGameService {
 
     public ChessResponse joinGame(JoinGameRequest req, String authToken) {
         String username;
-        int gameID;
         try {
             username = authData.getUserFromAuth(authToken);
         } catch (DataAccessException e) {

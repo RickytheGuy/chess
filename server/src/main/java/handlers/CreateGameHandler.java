@@ -14,8 +14,8 @@ import spark.Response;
 public class CreateGameHandler {
     private final CreateGameService createGameService;
     private final Gson serializer = new Gson();
-    public CreateGameHandler(UserDAO userData, AuthDAO authData, GameDAO gameData){
-        this.createGameService = new CreateGameService(userData, authData, gameData);
+    public CreateGameHandler(AuthDAO authData, GameDAO gameData){
+        this.createGameService = new CreateGameService(authData, gameData);
     }
 
     public Object handleRequest(Request request, Response response) {

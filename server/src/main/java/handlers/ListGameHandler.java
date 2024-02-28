@@ -3,7 +3,6 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
-import model.GameData;
 import requests.*;
 import services.ListGameService;
 import spark.Request;
@@ -25,23 +24,6 @@ public class ListGameHandler {
         }
         else {
             response.status(200);
-            String[] arr_res;
-            StringBuilder builder = new StringBuilder("{\"games\":[");
-            if (!((ListGameResponse) res).games().isEmpty()) {
-                for (GameData game : ((ListGameResponse) res).games()) {
-                    arr_res = serializer.toJson(game).split(",");
-                    for (int i = 0; i < arr_res.length - 1; i++) {
-                        builder.append(arr_res[i]);
-                        if (i != arr_res.length - 2) {
-                            builder.append(",");
-                        }
-                    }
-                    builder.append("},");
-                }
-                builder.replace(builder.length() - 1, builder.length(), "]}");
-            } else {return serializer.toJson(res);}
-            //builder.append("}]}");
-            //return builder.toString();
         }
         return serializer.toJson(res);
 

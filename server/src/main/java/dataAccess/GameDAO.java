@@ -1,7 +1,6 @@
 package dataAccess;
 
 import model.GameData;
-import requests.ChessResponse;
 
 import java.util.ArrayList;
 

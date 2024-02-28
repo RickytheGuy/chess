@@ -5,11 +5,9 @@ import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import requests.*;
 
-import java.util.List;
-
 public class ListGameService {
-    AuthDAO authData;
-    GameDAO gameData;
+    private final AuthDAO authData;
+    private final GameDAO gameData;
     public ListGameService(AuthDAO authData, GameDAO gameData) {
         this.authData = authData;
         this.gameData = gameData;
