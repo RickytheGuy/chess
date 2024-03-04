@@ -5,9 +5,9 @@ import handlers.*;
 import dataAccess.*;
 
 public class Server {
-    private final GameDAO gameData = new MemoryGameDAO();
-    private final UserDAO userData = new MemoryUserDAO();
-    private final AuthDAO authData = new MemoryAuthDAO();
+    private GameDAO gameData;
+    private UserDAO userData;
+    private AuthDAO authData;
     private final ClearHandler clearHandler = new ClearHandler(gameData, userData, authData);
     private final LoginHandler loginHandler = new LoginHandler(userData, authData);
     private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
@@ -17,6 +17,10 @@ public class Server {
     public Server() {}
 
     public int run(int desiredPort) {
+        SqlDAO db = new SqlDAO();
+        gameData = db;
+        userData = db;
+        authData = db;
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
