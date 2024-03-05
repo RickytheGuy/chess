@@ -12,7 +12,7 @@ public interface GameDAO {
 
     boolean gameExists(int gameID);
 
-    void addPlayerToGame(int i, String username, String s) throws DataAccessException;
+    void addPlayerToGame(int gameID, String username, String playerColor) throws DataAccessException;
 
     ArrayList<GameData> listGames();
 }

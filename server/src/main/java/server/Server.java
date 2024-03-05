@@ -8,12 +8,7 @@ public class Server {
     private GameDAO gameData;
     private UserDAO userData;
     private AuthDAO authData;
-    private final ClearHandler clearHandler = new ClearHandler(gameData, userData, authData);
-    private final LoginHandler loginHandler = new LoginHandler(userData, authData);
-    private final RegisterHandler registerHandler = new RegisterHandler(userData, authData);
-    private final LogoutHandler logoutHandler = new LogoutHandler(authData);
-    private final CreateGameHandler createGameHandler = new CreateGameHandler(authData, gameData);
-    private final JoinGameHandler joinGameHandler = new JoinGameHandler(authData, gameData);
+
     public Server() {}
 
     public int run(int desiredPort) {
@@ -26,14 +21,14 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", clearHandler::handleRequest);
-        Spark.delete("/session", logoutHandler::handleRequest);
+        Spark.delete("/db", new ClearHandler(gameData, userData, authData)::handleRequest);
+        Spark.delete("/session", new LogoutHandler(authData)::handleRequest);
 
-        Spark.post("/user", registerHandler::handleRequest);
-        Spark.post("/session", loginHandler::handleRequest);
-        Spark.post("/game", createGameHandler::handleRequest);
+        Spark.post("/user", new RegisterHandler(userData, authData)::handleRequest);
+        Spark.post("/session", new LoginHandler(userData, authData)::handleRequest);
+        Spark.post("/game", new CreateGameHandler(authData, gameData)::handleRequest);
 
-        Spark.put("/game", joinGameHandler::handleRequest);
+        Spark.put("/game", new JoinGameHandler(authData, gameData)::handleRequest);
 
         Spark.get("/game", new ListGameHandler(authData, gameData)::handleRequest);
         Spark.awaitInitialization();
