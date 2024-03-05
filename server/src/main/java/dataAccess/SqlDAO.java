@@ -148,15 +148,30 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 
     @Override
     public void addPlayerToGame(int gameID, String username, String playerColor) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var sql = "UPDATE game SET " + playerColor + "Username = ? WHERE gameID = ?";
-            try (var preparedStatement = conn.prepareStatement(sql)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setInt(2, gameID);
-                preparedStatement.executeUpdate();
+        if (playerColor != null && !playerColor.isEmpty()) {
+            try (var conn = DatabaseManager.getConnection()) {
+                var sql = "SELECT " + playerColor + "Username FROM game WHERE gameID = ?";
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setInt(1, gameID);
+                    try (var resultSet = preparedStatement.executeQuery()) {
+                        if (resultSet.next() && resultSet.getString(1) != null) {
+                            throw new DataAccessException("Error: Player color " + playerColor + " already assigned in the game.");
+                        }
+                    }
+                }
+
+                // No existing player assigned for the specified color, proceed with the update
+                sql = "UPDATE game SET " + playerColor + "Username = ? WHERE gameID = ?";
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                throw new DataAccessException(String.format("Unable to add player to game: %s", ex.getMessage()));
             }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to add player to game: %s", ex.getMessage()));
+        } else {
+            throw new IllegalArgumentException("Player color cannot be null or empty.");
         }
     }
 
@@ -246,7 +261,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to get user from auth: %s", ex.getMessage()));
         }
-        return null;
+        throw new DataAccessException(String.format("Unable to get user from auth"));
     }
 
     @Override
