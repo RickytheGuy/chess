@@ -32,4 +32,20 @@ public class MemoryUserDAO implements UserDAO{
     public int size() {
         return data_list.size();
     }
+
+    @Override
+    public String passwordMatches(String username, String password) throws DataAccessException {
+        for (UserData user: data_list) {
+            if (Objects.equals(user.username(), username)) {
+                if (Objects.equals(user.password(), password)) {
+                    return user.username();
+                }
+            }
+        }
+        throw new DataAccessException("Error: User not found");
+    }
+
+
 }
+
+

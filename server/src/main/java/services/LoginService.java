@@ -16,11 +16,13 @@ public class LoginService {
     public ChessResponse login(LoginRequest req)  {
         String username = req.username();
         try {
-            if (!userData.getUser(username).password().equals(req.password())) {
+            if (userData.passwordMatches(username, req.password()).isEmpty()) {
                 return new ErrorResponse(401, "Error: unauthorized");
             }
         } catch (NullPointerException e) {
             return new ErrorResponse(401, "Error: unauthorized");
+        } catch (DataAccessException e) {
+            return new ErrorResponse(401, "Error: User not found");
         }
 
         authData.addAuth(username);

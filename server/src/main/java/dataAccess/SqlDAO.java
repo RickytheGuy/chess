@@ -2,6 +2,7 @@ package dataAccess;
 
 import model.GameData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -270,7 +271,8 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             var sql = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                preparedStatement.setString(2, encoder.encode(password));
                 preparedStatement.setString(3, email);
                 preparedStatement.executeUpdate();
             }
@@ -298,5 +300,26 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             System.out.println("Unable to get size: " + ex.getMessage());
         }
         return 0;
+    }
+
+    @Override
+    public String passwordMatches(String username, String password) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var sql = "SELECT password FROM user WHERE username = ?";
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, username);
+                try (var resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                        if (encoder.matches(password, resultSet.getString("password"))) {
+                            return username;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to check password: %s", ex.getMessage()));
+        }
+        throw new DataAccessException("Error: User not found");
     }
 }

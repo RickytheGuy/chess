@@ -10,4 +10,6 @@ public interface UserDAO {
     void addUser(String username, String password, String email);
 
     int size();
+
+    String passwordMatches(String username, String password) throws DataAccessException;
 }
