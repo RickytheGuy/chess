@@ -66,6 +66,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
     }
     @Override
     public UserData getUser(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty.");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var sql = "SELECT * FROM user WHERE username = ?";
             try (var preparedStatement = conn.prepareStatement(sql)) {
@@ -267,6 +270,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 
     @Override
     public void addUser(String username, String password, String email) {
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Username and password cannot be null or empty.");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var sql = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
