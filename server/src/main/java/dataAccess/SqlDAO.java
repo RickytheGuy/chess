@@ -73,6 +73,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             var sql = "SELECT * FROM user WHERE username = ?";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 try (var resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
@@ -172,10 +173,10 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     preparedStatement.executeUpdate();
                 }
             } catch (SQLException ex) {
-                throw new DataAccessException(String.format("Unable to add player to game: %s", ex.getMessage()));
+                throw new DataAccessException(String.format("Error: Unable to add player to game: %s", ex.getMessage()));
             }
         } else {
-            throw new IllegalArgumentException("Player color cannot be null or empty.");
+            throw new IllegalArgumentException("Error: Player color cannot be null or empty.");
         }
     }
 
@@ -202,6 +203,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 
     @Override
     public void addAuth(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty.");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var sql = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
@@ -218,6 +222,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 
     @Override
     public String getAuth(String username) throws DataAccessException {
+        if (username == null || username.isEmpty()) {
+            throw new DataAccessException("Error: Username cannot be null or empty.");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var sql = "SELECT * FROM auth WHERE username = ? ORDER BY authID DESC LIMIT 1";
             try (var preparedStatement = conn.prepareStatement(sql)) {
@@ -242,11 +249,11 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                 preparedStatement.setString(1, authToken);
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected == 0) {
-                    throw new DataAccessException("No rows were affected by the deletion.");
+                    throw new DataAccessException("Error: No rows were affected by the deletion.");
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to remove auth: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Error: Unable to remove auth: %s", ex.getMessage()));
         }
     }
 
@@ -263,9 +270,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to get user from auth: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Error: Unable to get user from auth: %s", ex.getMessage()));
         }
-        throw new DataAccessException(String.format("Unable to get user from auth"));
+        throw new DataAccessException(String.format("Error: Unable to get user from auth"));
     }
 
     @Override
