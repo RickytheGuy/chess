@@ -7,7 +7,11 @@ import java.util.Scanner;
 public class Repl {
     private ServerFacade sf;
     public Repl (int port) {
-        sf = new ServerFacade(port);
+        try {
+            sf = new ServerFacade(port);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void loginScreen() {
@@ -26,7 +30,11 @@ public class Repl {
                 String password = scanner.next();
                 System.out.println("Enter your email: ");
                 String email = scanner.next();
-                String token = sf.register(username, password, email);
+                try {
+                    String token = sf.register(username, password, email);
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             } else if (choice == 2) {
                 String token = sf.login();
             } else if (choice == 3) {

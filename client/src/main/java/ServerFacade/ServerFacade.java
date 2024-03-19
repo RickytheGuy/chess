@@ -1,11 +1,14 @@
 package ServerFacade;
 
 import com.google.gson.Gson;
+import requests.LoginRequest;
+import requests.RegisterRequest;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Map;
 
 public class ServerFacade {
     private URI uri;
@@ -17,6 +20,13 @@ public class ServerFacade {
         uri = URI.create(uri + "/user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.addRequestProperty("Content-Type", "application/json");
+        RegisterRequest body = new RegisterRequest(username, password, email);
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(body);
+            outputStream.write(jsonBody.getBytes());
+        }
         http.connect();
 
         try (InputStream respbody = http.getInputStream()) {

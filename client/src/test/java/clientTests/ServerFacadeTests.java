@@ -31,7 +31,12 @@ public class ServerFacadeTests {
 
     @Test
     public void testInitOk() {
-        serverFacade.register("testUser", "testPass", "testEmail");
+        try {
+            serverFacade.register("testUser", "testPass", "testEmail");
+        }
+        catch (Exception e) {
+            assert(false);
+        }
     }
 
 }
