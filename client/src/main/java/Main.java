@@ -1,7 +1,10 @@
 import client.Repl;
+import server.Server;
 public class Main {
     public static void main(String[] args) {
-        Repl repl = new Repl(8080);
+        Server s = new Server();
+        int p = s.run(0);
+        Repl repl = new Repl(p);
         repl.loginScreen();
     }
 }

@@ -46,14 +46,16 @@ public class ServerFacade {
         return response.authToken();
     }
 
-    public void logout(String authToken) {
+    public boolean logout(String authToken) {
         LogoutRequest request = new LogoutRequest(authToken);
         try {
-            makeRequest("DELETE", "/session", request, null, null);
+            makeRequest("DELETE", "/session", request, null, authToken);
         } catch (Exception e) {
-            System.out.println("Failed to logout");
+            repl.printLogoutFail();
+            return false;
         }
         // Logout a user
+        return true;
     }
 
     public int createGame(String authToken, String gameName) {
@@ -69,16 +71,30 @@ public class ServerFacade {
         return response.gameID();
     }
 
-    public void listGames(String authToken) {
+    public boolean listGames(String authToken) {
         ListGameRequest request = new ListGameRequest();
         ListGameResponse response;
         try {
-            response = makeRequest("GET", "/game", request, ListGameResponse.class, authToken);
+            response = makeRequest("GET", "/game", null, ListGameResponse.class, authToken);
         } catch (Exception e) {
             repl.printListGamesFail();
-            return;
+            return false;
         }
         repl.printListGamesSuccess(response.games());
+        return true;
+    }
+
+    public boolean joinGame(String authToken, int gameID, String playerColor) {
+        JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
+        JoinGameResponse response;
+        try {
+            response = makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
+        } catch (Exception e) {
+            repl.printJoinGameFail(gameID);
+            return false;
+        }
+        repl.printJoinGameSuccess(playerColor, gameID);
+        return true;
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws Exception {

@@ -3,6 +3,7 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
+import org.jetbrains.annotations.NotNull;
 import requests.*;
 import services.ListGameService;
 import spark.Request;

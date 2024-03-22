@@ -22,7 +22,7 @@ public class Repl {
         System.out.println("2. Login");
         System.out.println("3. Exit");
         System.out.println("4. Help");
-        System.out.println("Please enter your choice: ");
+        System.out.println("Please enter the number your choice: ");
     }
 
     public void loginScreen() {
@@ -45,7 +45,9 @@ public class Repl {
                 System.out.println("Enter your email: ");
                 String email = scanner.next();
                 token = sf.register(username, password, email);
-                loggedInScreen();
+                if (token != null) {
+                    loggedInScreen();
+                }
 
             } else if (choice == 2) {
                 System.out.println("Enter your username: ");
@@ -53,6 +55,9 @@ public class Repl {
                 System.out.println("Enter your password: ");
                 String password = scanner.next();
                 token = sf.login(username, password);
+                if (token != null) {
+                    loggedInScreen();
+                }
             } else if (choice == 3) {
                 System.out.println("Goodbye!");
                 sf.logout(token);
@@ -77,30 +82,53 @@ public class Repl {
         while (true) {
             try {
                 choice = scanner.nextInt();
+                if (choice == 1) {
+                    // Create Game
+                    System.out.println("Enter the name of the game: ");
+                    String gameName = scanner.next();
+                    int gameID = sf.createGame(token, gameName);
+                } else if (choice == 2) {
+                    sf.listGames(token);
+                    // List Games
+                } else if (choice == 3) {
+                    // Join Game
+                    System.out.println("Enter the ID of the game you want to join: ");
+                    int gameID = scanner.nextInt();
+                    System.out.println("Enter the color you want to play as (w/b): ");
+                    String playerColor = scanner.next();
+                    boolean success = false;
+                    if (playerColor.equals("w") ) {
+                        success = sf.joinGame(token, gameID, "WHITE");
+                    } else if (playerColor.equals("b")) {
+                        success = sf.joinGame(token, gameID, "BLACK");
+                    } else {
+                        throw new Exception();
+                    }
+                    if (success) {
+                        gameScreen();
+                    }
+                } else if (choice == 4) {
+                    // Join as Observer
+                    System.out.println("Enter the ID of the game you want to observe: ");
+                    int gameID = scanner.nextInt();
+                    boolean success = sf.joinGame(token, gameID, null);
+                    if (success) {
+                        gameScreen();
+                    }
+                } else if (choice == 5) {
+                    // Logout
+                    if (sf.logout(token)) {
+                        break;
+                    }
+                } else if (choice == 6) {
+                    // Help
+                    show_logged_in_options();
+                } else {
+                    System.out.println("Invalid choice. Please try again.");
+                }
             } catch (Exception e) {
                 System.out.println("Invalid choice. Please try again.");
                 scanner.nextLine();
-                continue;
-            }
-            if (choice == 1) {
-                // Create Game
-                System.out.println("Enter the name of the game: ");
-                String gameName = scanner.next();
-                int gameID = sf.createGame(token, gameName);
-            } else if (choice == 2) {
-                // List Games
-            } else if (choice == 3) {
-                // Join Game
-            } else if (choice == 4) {
-                // Join as Observer
-            } else if (choice == 5) {
-                // Logout
-                sf.logout(token);
-                break;
-            } else if (choice == 6) {
-                // Help
-            } else {
-                System.out.println("Invalid choice. Please try again.");
             }
         }
 
@@ -118,7 +146,7 @@ public class Repl {
         System.out.println("4. Join as Observer");
         System.out.println("5. Logout");
         System.out.println("6. Help");
-        System.out.println("Please enter your choice: ");
+        System.out.println("Please enter the number of your choice: ");
     }
 
     public void printCreateGameFail() {
@@ -132,7 +160,7 @@ public class Repl {
     }
 
     public void printListGamesFail() {
-        System.out.println("Failed to list games. Please try again.");
+        System.out.println("No games found.");
         show_logged_in_options();
     }
 
@@ -141,6 +169,34 @@ public class Repl {
         for (GameData game : games) {
             System.out.println("ID: " + game.gameID() + " Name: " + game.gameName());
         }
+        show_logged_in_options();
+    }
+
+    public void printJoinGameFail(int id) {
+        System.out.println("Failed to join game " + id + ". Please try again.");
+        show_logged_in_options();
+    }
+
+    public void printJoinGameSuccess(String playerColor, int gameID) {
+        if (playerColor == null) {
+            System.out.println("Joined game " + gameID + " as an observer.");
+        } else{
+            System.out.println("Joined game " + gameID + " as the " + playerColor + " player.");
+        }
+        show_logged_in_options();
+    }
+
+    public void gameScreen() {
+        while (true) {
+            // Get the game state
+            // Print the game state
+            // Get the move
+            // Send the move
+        }
+    }
+
+    public void printLogoutFail() {
+        System.out.println("Failed to logout. Please try again.");
         show_logged_in_options();
     }
 }

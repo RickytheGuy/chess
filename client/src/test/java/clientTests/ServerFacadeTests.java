@@ -4,6 +4,7 @@ import ServerFacade.ServerFacade;
 import client.Repl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.Server;
 
@@ -17,14 +18,19 @@ public class ServerFacadeTests {
     public static void init() {
         server = new Server();
         server.clear();
-        var port = server.run(8080);
+        var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        Repl repl = new Repl(8080);
+        Repl repl = new Repl(port);
         try {
-            serverFacade = new ServerFacade(8080, repl);
+            serverFacade = new ServerFacade(port, repl);
         } catch (Exception e) {
             assert(false);
         }
+    }
+
+    @BeforeEach
+    public void clear() {
+        server.clear();
     }
 
     @AfterAll
@@ -52,15 +58,13 @@ public class ServerFacadeTests {
     @Test
     public void testLogout() {
         String token = serverFacade.register("testUser", "testPass", "testEmail");
-        serverFacade.logout(token);
-        assert(true);
+        assert(serverFacade.logout(token));
     }
 
     @Test
     public void testLogoutFail() {
         String token = serverFacade.register("testUser", "testPass", "testEmail");
-        serverFacade.logout("notRealToken");
-        assert(false);
+        assert(!serverFacade.logout("notRealToken"));
     }
 
     @Test
@@ -84,8 +88,34 @@ public class ServerFacadeTests {
     public void listGames() {
 
         String token = serverFacade.register("testUser", "testPass", "testEmail");
+        serverFacade.createGame(token, "testGame");
+        int gameId = serverFacade.createGame(token, "otherGame");
+        assert(serverFacade.listGames(token));
+
+    }
+
+    @Test
+    public void listGamesFail() {
+
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        serverFacade.createGame(token, "testGame");
+        int gameId = serverFacade.createGame(token, "otherGame");
+        assert(!serverFacade.listGames("notRealToken"));
+
+    }
+
+    @Test
+    public void joinGame() {
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
         int gameId = serverFacade.createGame(token, "testGame");
-        serverFacade.listGames(token);
+        assert(serverFacade.joinGame(token, gameId, "WHITE"));
+    }
+
+    @Test
+    public void joinGameFail() {
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        serverFacade.createGame(token, "testGame");
+        assert(!serverFacade.joinGame(token, -1, "WHITE"));
 
     }
 
