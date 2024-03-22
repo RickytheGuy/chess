@@ -8,21 +8,31 @@ public class Repl {
     private ServerFacade sf;
     public Repl (int port) {
         try {
-            sf = new ServerFacade(port);
+            sf = new ServerFacade(port, this);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    public void loginScreen() {
-        System.out.println("Welcome to the game!");
+    public void showLoginOptions() {
         System.out.println("1. Register");
         System.out.println("2. Login");
         System.out.println("3. Exit");
         System.out.println("Please enter your choice: ");
+    }
+
+    public void loginScreen() {
+        showLoginOptions();
         Scanner scanner = new Scanner(System.in);
+        int choice;
         while (true) {
-            int choice = scanner.nextInt();
+            try {
+                choice = scanner.nextInt();
+            } catch (Exception e) {
+                            System.out.println("Invalid choice. Please try again.");
+                            scanner.nextLine();
+                            continue;
+                        }
             if (choice == 1) {
                 System.out.println("Enter your username: ");
                 String username = scanner.next();
@@ -30,11 +40,8 @@ public class Repl {
                 String password = scanner.next();
                 System.out.println("Enter your email: ");
                 String email = scanner.next();
-                try {
-                    String token = sf.register(username, password, email);
-                } catch (Exception e) {
-                    System.out.println("Error: " + e.getMessage());
-                }
+                String token = sf.register(username, password, email);
+
             } else if (choice == 2) {
                 String token = sf.login();
             } else if (choice == 3) {
@@ -45,5 +52,10 @@ public class Repl {
                 System.out.println("Invalid choice. Please try again.");
             }
         }
+    }
+
+    public void printRegisterFail() {
+        System.out.println("User already exists. Please try again.");
+        showLoginOptions();
     }
 }

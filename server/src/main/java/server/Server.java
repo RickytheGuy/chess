@@ -9,13 +9,14 @@ public class Server {
     private UserDAO userData;
     private AuthDAO authData;
 
-    public Server() {}
-
-    public int run(int desiredPort) {
+    public Server() {
         SqlDAO db = new SqlDAO();
         gameData = db;
         userData = db;
         authData = db;
+    }
+
+    public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -39,5 +40,11 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    public void clear() {
+        gameData.clearAll();
+        userData.clearAll();
+        authData.clearAll();
     }
 }
