@@ -12,6 +12,7 @@ public class ServerFacadeTests {
     private static ServerFacade serverFacade;
     private static Server server;
 
+
     @BeforeAll
     public static void init() {
         server = new Server();
@@ -42,14 +43,50 @@ public class ServerFacadeTests {
 
     @Test
     public void testInitFail() {
-        try {
-            serverFacade.register("testUser", "testPass", "testEmail");
-            String token = serverFacade.register("testUser", "testPass", "testEmail");
-            assert(token == null);
-        }
-        catch (Exception e) {
-            assert(true);
-        }
+        serverFacade.register("testUser", "testPass", "testEmail");
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        assert(token == null);
+
+    }
+
+    @Test
+    public void testLogout() {
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        serverFacade.logout(token);
+        assert(true);
+    }
+
+    @Test
+    public void testLogoutFail() {
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        serverFacade.logout("notRealToken");
+        assert(false);
+    }
+
+    @Test
+    public void createGame() {
+
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        int gameId = serverFacade.createGame(token, "testGame");
+        assert(gameId != -1);
+
+    }
+
+    @Test
+    public void createGameFail() {
+
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        int gameId = serverFacade.createGame(token, null);
+        assert(gameId == -1);
+
+    }
+    @Test
+    public void listGames() {
+
+        String token = serverFacade.register("testUser", "testPass", "testEmail");
+        int gameId = serverFacade.createGame(token, "testGame");
+        serverFacade.listGames(token);
+
     }
 
 }

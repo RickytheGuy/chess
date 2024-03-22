@@ -2,10 +2,7 @@ package ServerFacade;
 
 import client.Repl;
 import com.google.gson.Gson;
-import requests.ErrorResponse;
-import requests.LoginRequest;
-import requests.RegisterRequest;
-import requests.RegisterResponse;
+import requests.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +24,7 @@ public class ServerFacade {
         RegisterRequest request = new RegisterRequest(username, password, email);
         RegisterResponse response;
         try {
-            response = makeRequest("POST", "/user", request, RegisterResponse.class);
+            response = makeRequest("POST", "/user", request, RegisterResponse.class, null);
         }
         catch (Exception e) {
             repl.printRegisterFail();
@@ -36,22 +33,63 @@ public class ServerFacade {
         return response.authToken();
     }
 
-    public String login() {
+    public String login(String username, String password) {
+        LoginRequest request = new LoginRequest(username, password);
+        LoginResponse response;
+        try {
+            response =  makeRequest("POST", "/session", request, LoginResponse.class, null);
+        } catch (Exception e) {
+            repl.printLoginFail();
+            return null;
+        }
         // Login a user
-        return null;
+        return response.authToken();
     }
 
-    public void logout() {
+    public void logout(String authToken) {
+        LogoutRequest request = new LogoutRequest(authToken);
+        try {
+            makeRequest("DELETE", "/session", request, null, null);
+        } catch (Exception e) {
+            System.out.println("Failed to logout");
+        }
         // Logout a user
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+    public int createGame(String authToken, String gameName) {
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        CreateGameResponse response;
+        try {
+            response = makeRequest("POST", "/game", request, CreateGameResponse.class, authToken);
+        } catch (Exception e) {
+            repl.printCreateGameFail();
+            return -1;
+        }
+        repl.printCreateGameSuccess(gameName, response.gameID());
+        return response.gameID();
+    }
+
+    public void listGames(String authToken) {
+        ListGameRequest request = new ListGameRequest();
+        ListGameResponse response;
+        try {
+            response = makeRequest("GET", "/game", request, ListGameResponse.class, authToken);
+        } catch (Exception e) {
+            repl.printListGamesFail();
+            return;
+        }
+        repl.printListGamesSuccess(response.games());
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws Exception {
         try {
             URL url = URI.create(uri + path).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            if (token != null) {
+                http.addRequestProperty("Authorization", token);
+            }
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
