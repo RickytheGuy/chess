@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -7,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
-
+import com.google.gson.Gson;
 public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 
     public SqlDAO() {
@@ -114,9 +115,12 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
     @Override
     public int addGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var sql = "INSERT INTO game (gameName) VALUES (?)";
+            // add both the game and create a new chess game for it
+            var sql = "INSERT INTO game (gameName, chessGame) VALUES (?, ?)";
+//            var sql = "INSERT INTO game (gameName) VALUES (?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, gameName);
+                preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
                 preparedStatement.executeUpdate();
             }
             sql = "SELECT LAST_INSERT_ID()";

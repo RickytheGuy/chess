@@ -1,15 +1,25 @@
 package client;
 
 import ServerFacade.ServerFacade;
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
+
+import ui.EscapeSequences.*;
+
+import static ui.EscapeSequences.*;
 
 public class Repl {
     private ServerFacade sf;
     private String token;
     public Repl (int port) {
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
         try {
             sf = new ServerFacade(port, this);
         } catch (Exception e) {
@@ -18,10 +28,8 @@ public class Repl {
     }
 
     public void showLoginOptions() {
-        System.out.println("1. Register");
-        System.out.println("2. Login");
-        System.out.println("3. Exit");
-        System.out.println("4. Help");
+        System.out.println("1. Register\t2. Login");
+        System.out.println("3. Exit\t\t4. Help");
         System.out.println("Please enter the number your choice: ");
     }
 
@@ -57,10 +65,13 @@ public class Repl {
                 token = sf.login(username, password);
                 if (token != null) {
                     loggedInScreen();
+                    showLoginOptions();
                 }
             } else if (choice == 3) {
                 System.out.println("Goodbye!");
-                sf.logout(token);
+                if (token != null) {
+                    sf.logout(token);
+                }
                 break;
             } else if (choice == 4) {
                 showLoginOptions();
@@ -106,6 +117,7 @@ public class Repl {
                     }
                     if (success) {
                         gameScreen();
+                        show_logged_in_options();
                     }
                 } else if (choice == 4) {
                     // Join as Observer
@@ -136,16 +148,13 @@ public class Repl {
 
     public void printLoginFail() {
         System.out.println("Invalid username or password. Please try again.");
-        show_logged_in_options();
+        showLoginOptions();
     }
 
     public void show_logged_in_options() {
-        System.out.println("1. Create Game");
-        System.out.println("2. List Games");
-        System.out.println("3. Join Game");
-        System.out.println("4. Join as Observer");
-        System.out.println("5. Logout");
-        System.out.println("6. Help");
+        System.out.println("1. Create Game\t2. List Games");
+        System.out.println("3. Join Game\t4. Join as Observer");
+        System.out.println("5. Logout\t\t6. Help");
         System.out.println("Please enter the number of your choice: ");
     }
 
@@ -165,10 +174,16 @@ public class Repl {
     }
 
     public void printListGamesSuccess(ArrayList<GameData> games) {
+        if (games.size() == 0) {
+            System.out.println("No games found.\n");
+            show_logged_in_options();
+            return;
+        }
         System.out.println("Games: ");
         for (GameData game : games) {
-            System.out.println("ID: " + game.gameID() + " Name: " + game.gameName());
+            System.out.println("ID: " + game.gameID() + " Name: " + game.gameName() + "White: " + game.whiteUsername() + " Black: " + game.blackUsername());
         }
+        System.out.println();
         show_logged_in_options();
     }
 
@@ -192,11 +207,112 @@ public class Repl {
             // Print the game state
             // Get the move
             // Send the move
+            drawChessboard(true);
+            drawChessboard(false);
+            printGameHelp();
+            Scanner scanner = new Scanner(System.in);
+            int choice;
+            try {
+                choice = scanner.nextInt();
+                if (choice == 4) {
+                    printGameHelp();
+                } else if (choice == 5) {
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid choice. Please try again.");
+                scanner.nextLine();
+            }
+
         }
+    }
+
+    public void printGameHelp() {
+//        System.out.println("1. Move a piece");
+//        System.out.println("2. Resign");
+//        System.out.println("3. Offer a draw");
+        System.out.println("4. Help");
+        System.out.println("5. Quit");
+        System.out.println("Please enter the number of your choice: ");
     }
 
     public void printLogoutFail() {
         System.out.println("Failed to logout. Please try again.");
         show_logged_in_options();
+    }
+
+    public void drawChessboard(boolean black) {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        System.out.print(ERASE_SCREEN + SET_BG_COLOR_LIGHT_GREY + EMPTY + SET_TEXT_COLOR_WHITE);
+
+        ArrayList<String> letters = new ArrayList<>(List.of("h", "g", "f", "e", "d", "c", "b", "a"));
+        int start = 0;
+        int stop = 7;
+        int step =1;
+        if (!black) {
+            Collections.reverse(letters);
+            start = stop;
+            stop = 0;
+            step = -1;
+        }
+        for (String letter : letters) {
+            System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
+        }
+        System.out.println(EMPTY);
+        for (int row = start; row * step <= stop; row = row + step) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + " " + (row + 1)  + " ");
+            for (int col = start; col * step <= stop; col = col + step) {
+                ChessPiece piece = board.getPieceUsingRowCol(row, col);
+                String pieceString = EMPTY;
+                String teamColor = SET_TEXT_COLOR_WHITE;
+                if (piece != null) {
+                    ChessPiece.PieceType type = piece.getPieceType();
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        teamColor = SET_TEXT_COLOR_BLACK;
+                        if (type == ChessPiece.PieceType.KING) {
+                            pieceString = teamColor + BLACK_KING;
+                        } else if (type == ChessPiece.PieceType.QUEEN) {
+                            pieceString = teamColor + BLACK_QUEEN;
+                        } else if (type == ChessPiece.PieceType.BISHOP) {
+                            pieceString = teamColor + BLACK_BISHOP;
+                        } else if (type == ChessPiece.PieceType.KNIGHT) {
+                            pieceString = teamColor + BLACK_KNIGHT;
+                        } else if (type == ChessPiece.PieceType.ROOK) {
+                            pieceString = teamColor + BLACK_ROOK;
+                        } else if (type == ChessPiece.PieceType.PAWN) {
+                            pieceString = teamColor + BLACK_PAWN;
+                        }
+                    } else {
+                        if (type == ChessPiece.PieceType.KING) {
+                            pieceString = teamColor + WHITE_KING;
+                        } else if (type == ChessPiece.PieceType.QUEEN) {
+                            pieceString = teamColor + WHITE_QUEEN;
+                        } else if (type == ChessPiece.PieceType.BISHOP) {
+                            pieceString = teamColor + WHITE_BISHOP;
+                        } else if (type == ChessPiece.PieceType.KNIGHT) {
+                            pieceString = teamColor + WHITE_KNIGHT;
+                        } else if (type == ChessPiece.PieceType.ROOK) {
+                            pieceString = teamColor + WHITE_ROOK;
+                        } else if (type == ChessPiece.PieceType.PAWN) {
+                            pieceString = teamColor + WHITE_PAWN;
+                        }
+                    }
+                }
+                if ((row + col) % 2 == 0) {
+                    System.out.print(SET_BG_COLOR_CHESS_YELLOW + pieceString + RESET_BG_COLOR + SET_TEXT_COLOR_WHITE);
+                } else {
+                    System.out.print(SET_BG_COLOR_CHESSGREEN + pieceString + RESET_BG_COLOR+ SET_TEXT_COLOR_WHITE);
+                }
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  " " + (row + 1) + " ");
+        }
+        System.out.print(EMPTY + SET_TEXT_COLOR_WHITE);
+        for (String letter : letters) {
+            System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
+        }
+        System.out.println(EMPTY);
     }
 }

@@ -119,4 +119,13 @@ public class ServerFacadeTests {
 
     }
 
+    @Test
+    public void drawBoardBlack() {
+        serverFacade.repl.drawChessboard(true);
+    }
+
+    @Test
+    public void drawBoardWhite() {
+        serverFacade.repl.drawChessboard(false);
+    }
 }

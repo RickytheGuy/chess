@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ServerFacade {
     private URI uri;
-    private Repl repl;
+    public Repl repl;
     public ServerFacade(int port, Repl repl)  throws Exception{
         uri = new URI("http://localhost:" + Integer.toString(port));
         this.repl = repl;
