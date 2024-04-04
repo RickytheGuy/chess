@@ -5,13 +5,17 @@ import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.*;
 import webSocketMessages.userCommands.JoinPlayerCommand;
 import webSocketMessages.userCommands.UserGameCommand;
 
+import javax.management.Notification;
 import java.io.IOException;
+import java.util.ArrayList;
+
 
 @org.eclipse.jetty.websocket.api.annotations.WebSocket
 public class WebSocket {
@@ -49,12 +53,30 @@ public class WebSocket {
     }
 
     private void join_player(Session session, JoinPlayerCommand command) throws IOException {
-        connectionManager.add(command.getAuthString(), session);
+
         ChessGame game = gameData.getGame(command.getGameID());
+        String user;
+        try {
+            user = authData.getUserFromAuth(command.getAuthString());
+            ArrayList<GameData> games = gameData.listGames();
+            for (int i = 0; i < games.size(); i++) {
+                if (games.get(i).gameID() == command.getGameID() && games.get(i).whiteUsername().equals(user) || games.get(i).blackUsername().equals(user)) {
+                    connectionManager.add(command.getAuthString(), session);
+                    connectionManager.send(command.getAuthString(), new SeverError("Error: you cannot join this game."));
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // connectionManager.remove(command.getAuthString());
+            connectionManager.add(command.getAuthString(), session);
+            connectionManager.send(command.getAuthString(), new SeverError(e.getMessage()));
+            return;
+        }
         if ( game != null) {
             LoadGameMessage game_response = new LoadGameMessage(game);
+            connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), game_response);
         }
-        connectionManager.broadcast(command.getAuthString(), null);
+        connectionManager.broadcast(command.getAuthString(), new ServerNotification(user + " joined the game"));
     }
 }
