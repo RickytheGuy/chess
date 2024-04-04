@@ -120,7 +120,9 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
 //            var sql = "INSERT INTO game (gameName) VALUES (?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, gameName);
-                preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
+                ChessGame g = new ChessGame();
+                g.setBoard();
+                preparedStatement.setString(2, new Gson().toJson(g));
                 preparedStatement.executeUpdate();
             }
             sql = "SELECT LAST_INSERT_ID()";
@@ -338,5 +340,24 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             throw new DataAccessException(String.format("Unable to check password: %s", ex.getMessage()));
         }
         throw new DataAccessException("Error: User not found");
+    }
+
+    public ChessGame getGame(Integer gameID) {
+        try (var conn = DatabaseManager.getConnection()) {
+            var sql = "SELECT * FROM game WHERE gameID = ?";
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setInt(1, gameID);
+                try (var resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return new Gson().fromJson(resultSet.getString("chessGame"), ChessGame.class);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Unable to get game: " + ex.getMessage());
+        } catch (DataAccessException ex) {
+            System.out.println("Unable to get game: " + ex.getMessage());
+        }
+        return null;
     }
 }

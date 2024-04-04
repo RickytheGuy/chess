@@ -8,19 +8,21 @@ public class Server {
     private GameDAO gameData;
     private UserDAO userData;
     private AuthDAO authData;
+    private final WebSocket webSocketHandler;
 
     public Server() {
         SqlDAO db = new SqlDAO();
         gameData = db;
         userData = db;
         authData = db;
+        webSocketHandler = new WebSocket(gameData, userData, authData);
     }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
+        Spark.webSocket("/connect", webSocketHandler);
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", new ClearHandler(gameData, userData, authData)::handleRequest);
         Spark.delete("/session", new LogoutHandler(authData)::handleRequest);
@@ -32,6 +34,8 @@ public class Server {
         Spark.put("/game", new JoinGameHandler(authData, gameData)::handleRequest);
 
         Spark.get("/game", new ListGameHandler(authData, gameData)::handleRequest);
+
+
         Spark.awaitInitialization();
 
         return Spark.port();

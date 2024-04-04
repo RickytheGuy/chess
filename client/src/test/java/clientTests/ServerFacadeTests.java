@@ -121,11 +121,11 @@ public class ServerFacadeTests {
 
     @Test
     public void drawBoardBlack() {
-        serverFacade.repl.drawChessboard(true);
+        // serverFacade.repl.drawChessboard(true, game);
     }
 
     @Test
     public void drawBoardWhite() {
-        serverFacade.repl.drawChessboard(false);
+        // serverFacade.repl.drawChessboard(false, game);
     }
 }

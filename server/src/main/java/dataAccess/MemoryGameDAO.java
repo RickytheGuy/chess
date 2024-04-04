@@ -67,4 +67,9 @@ public class MemoryGameDAO implements GameDAO {
     public ArrayList<GameData> listGames() {
         return data;
     }
+
+    @Override
+    public ChessGame getGame(Integer gameId) {
+        return null;
+    }
 }

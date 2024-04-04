@@ -11,13 +11,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import ui.EscapeSequences.*;
-
 import static ui.EscapeSequences.*;
 
 public class Repl {
     private ServerFacade sf;
     private String token;
+    private boolean white = true;
     public Repl (int port) {
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
         try {
@@ -112,6 +111,7 @@ public class Repl {
                         success = sf.joinGame(token, gameID, "WHITE");
                     } else if (playerColor.equals("b")) {
                         success = sf.joinGame(token, gameID, "BLACK");
+                        white = false;
                     } else {
                         throw new Exception();
                     }
@@ -207,8 +207,6 @@ public class Repl {
             // Print the game state
             // Get the move
             // Send the move
-            drawChessboard(true);
-            drawChessboard(false);
             printGameHelp();
             Scanner scanner = new Scanner(System.in);
             int choice;
@@ -243,8 +241,8 @@ public class Repl {
         show_logged_in_options();
     }
 
-    public void drawChessboard(boolean black) {
-        ChessBoard board = new ChessBoard();
+    public void drawChessboard(ChessGame game) {
+        ChessBoard board = game.getBoard();
         board.resetBoard();
         System.out.print(ERASE_SCREEN + SET_BG_COLOR_LIGHT_GREY + EMPTY + SET_TEXT_COLOR_WHITE);
 
@@ -252,7 +250,7 @@ public class Repl {
         int start = 0;
         int stop = 7;
         int step =1;
-        if (!black) {
+        if (white) {
             Collections.reverse(letters);
             start = stop;
             stop = 0;

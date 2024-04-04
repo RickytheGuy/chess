@@ -1,8 +1,10 @@
 package ServerFacade;
 
+import chess.ChessGame;
 import client.Repl;
 import com.google.gson.Gson;
 import requests.*;
+import webSocketMessages.userCommands.JoinPlayerCommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +18,12 @@ import java.util.Map;
 public class ServerFacade {
     private URI uri;
     public Repl repl;
+
+    private WebSocketFacade webSocketFacade;
     public ServerFacade(int port, Repl repl)  throws Exception{
         uri = new URI("http://localhost:" + Integer.toString(port));
         this.repl = repl;
+        webSocketFacade = new WebSocketFacade("http://localhost:"+ Integer.toString(port), this);
     }
     public String register(String username, String password, String email) {
         RegisterRequest request = new RegisterRequest(username, password, email);
@@ -93,6 +98,13 @@ public class ServerFacade {
             repl.printJoinGameFail(gameID);
             return false;
         }
+        ChessGame.TeamColor p;
+        if (playerColor.equals("w")) {
+            p = ChessGame.TeamColor.WHITE;
+        } else {
+            p = ChessGame.TeamColor.BLACK;
+        }
+        webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, p)));
         repl.printJoinGameSuccess(playerColor, gameID);
         return true;
     }
