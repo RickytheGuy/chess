@@ -5,6 +5,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
+import requests.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,6 +141,7 @@ public class Repl {
                 }
             } catch (Exception e) {
                 System.out.println("Invalid choice. Please try again.");
+                show_logged_in_options();
                 scanner.nextLine();
             }
         }
@@ -221,6 +223,7 @@ public class Repl {
                 }
             } catch (Exception e) {
                 System.out.println("Invalid choice. Please try again.");
+                printGameHelp();
                 scanner.nextLine();
             }
 
@@ -312,5 +315,13 @@ public class Repl {
             System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
         }
         System.out.println(EMPTY);
+    }
+
+    public void printError(ErrorResponse error) {
+        System.out.println(error.message());
+    }
+
+    public void printObserverJoinGameSuccess(int gameID) {
+        System.out.println("Joined game " + gameID + " as an observer.");
     }
 }

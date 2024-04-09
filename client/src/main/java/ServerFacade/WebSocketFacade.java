@@ -32,6 +32,7 @@ public class WebSocketFacade extends Endpoint {
                     switch (type) {
                         case ERROR:
                             ErrorResponse error = new Gson().fromJson(message, ErrorResponse.class);
+                            serverFacade.repl.printError(error);
                         case LOAD_GAME:
                             // Implement this method
                             LoadGameMessage m = new Gson().fromJson(message, LoadGameMessage.class);

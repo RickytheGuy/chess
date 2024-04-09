@@ -1,9 +1,9 @@
 package webSocketMessages.serverMessages;
 
 public class SeverError extends ServerMessage{
-    private String message;
-    public SeverError(String message) {
+    private String errorMessage;
+    public SeverError(String errorMessage) {
         super(ServerMessageType.ERROR);
-        this.message = message;
+        this.errorMessage = errorMessage;
     }
 }

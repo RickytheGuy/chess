@@ -37,7 +37,7 @@ public class WebSocket {
                 join_player(session, new Gson().fromJson(message, JoinPlayerCommand.class));
                 break;
             case JOIN_OBSERVER:
-                connectionManager.add(command.getAuthString(), session);
+                join_observer(session, new Gson().fromJson(message, JoinPlayerCommand.class));
                 break;
             case MAKE_MOVE:
                 // Implement this method
@@ -52,18 +52,42 @@ public class WebSocket {
         // Implement this method
     }
 
-    private void join_player(Session session, JoinPlayerCommand command) throws IOException {
+    private void join_observer(Session session, JoinPlayerCommand command) throws IOException {
+        try {authData.getUserFromAuth(command.getAuthString());
+        } catch (Exception e) {
+            connectionManager.add(command.getAuthString(), session);
+            connectionManager.send(command.getAuthString(), new SeverError(e.getMessage()));
+            return;
+        }
 
         ChessGame game = gameData.getGame(command.getGameID());
+        if (game == null) {
+            connectionManager.add(command.getAuthString(), session);
+            connectionManager.send(command.getAuthString(), new SeverError("Error: Game does not exist."));
+            return;
+        }
+        connectionManager.add(command.getAuthString(), session);
+        LoadGameMessage game_response = new LoadGameMessage(game);
+        connectionManager.send(command.getAuthString(), game_response);
+        connectionManager.broadcast(command.getAuthString(), new ServerNotification("An observer has joined the game"));
+    }
+
+    private void join_player(Session session, JoinPlayerCommand command) throws IOException {
+        ChessGame game = gameData.getGame(command.getGameID());
+        if (game == null) {
+            connectionManager.add(command.getAuthString(), session);
+            connectionManager.send(command.getAuthString(), new SeverError("Error: Game does not exist."));
+            return;
+        }
         String user;
         try {
             user = authData.getUserFromAuth(command.getAuthString());
             ArrayList<GameData> games = gameData.listGames();
             for (int i = 0; i < games.size(); i++) {
-                if (games.get(i).gameID() == command.getGameID() && games.get(i).whiteUsername().equals(user) || games.get(i).blackUsername().equals(user)) {
-                    connectionManager.add(command.getAuthString(), session);
-                    connectionManager.send(command.getAuthString(), new SeverError("Error: you cannot join this game."));
-                    return;
+                if (games.get(i).gameID() == command.getGameID()) {
+                    if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && games.get(i).blackUsername().equals(user)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && games.get(i).whiteUsername().equals(user))) {
+                        throw new Exception("Error: you are already in this game.");
+                    }
                 }
             }
         } catch (Exception e) {

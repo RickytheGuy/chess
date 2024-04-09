@@ -92,19 +92,31 @@ public class ServerFacade {
     public boolean joinGame(String authToken, int gameID, String playerColor) {
         JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
         JoinGameResponse response;
+        ChessGame.TeamColor p;
+        if (playerColor.equals("w")) {
+            p = ChessGame.TeamColor.WHITE;
+        }  else if (playerColor.equals("b")) {
+            p = ChessGame.TeamColor.BLACK;
+        } else {
+            try {
+                webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, null)));
+                response = makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
+                repl.printObserverJoinGameSuccess(gameID);
+                return true;
+            } catch (Exception e) {
+                repl.printJoinGameFail(gameID);
+                return false;
+            }
+
+        }
         try {
+            webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, p)));
             response = makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
         } catch (Exception e) {
             repl.printJoinGameFail(gameID);
             return false;
         }
-        ChessGame.TeamColor p;
-        if (playerColor.equals("w")) {
-            p = ChessGame.TeamColor.WHITE;
-        } else {
-            p = ChessGame.TeamColor.BLACK;
-        }
-        webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, p)));
+
         repl.printJoinGameSuccess(playerColor, gameID);
         return true;
     }
