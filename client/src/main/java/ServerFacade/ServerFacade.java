@@ -1,10 +1,16 @@
 package ServerFacade;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import client.Repl;
 import com.google.gson.Gson;
 import requests.*;
 import webSocketMessages.userCommands.JoinPlayerCommand;
+import webSocketMessages.userCommands.LeaveCommand;
+import webSocketMessages.userCommands.MakeMoveCommand;
+import webSocketMessages.userCommands.ResignCommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,5 +177,25 @@ public class ServerFacade {
             }
         }
         return response;
+    }
+
+    public void move(String token, int gameID, int row, String col, int destRow, String destCol, ChessGame.TeamColor playerColor) throws InvalidMoveException {
+        if (row >= 0 && row <= 7 && destRow >= 0 && destRow <= 7 && col.length() == 1 && destCol.length() == 1) {
+            MakeMoveCommand command = new MakeMoveCommand(token,gameID, new ChessMove(new ChessPosition(row, col.charAt(0)), new ChessPosition(destRow, destCol.charAt(0))), playerColor);
+            try {
+                webSocketFacade.send(new Gson().toJson(command));
+                //return true;
+            } catch (Exception e) {
+                //return false;
+            }
+        } else {
+            throw new InvalidMoveException("Invalid move");
+        }
+    }
+
+    public void resign(String token, int gameID) {
+        // Resign from a game
+        webSocketFacade.send(new Gson().toJson(new ResignCommand(token, gameID)));
+        webSocketFacade.send(new Gson().toJson(new LeaveCommand(token)));
     }
 }

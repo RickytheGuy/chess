@@ -18,6 +18,8 @@ public class Repl {
     private ServerFacade sf;
     private String token;
     private boolean white = true;
+    private ChessGame.TeamColor playerColor;
+    private int currentGameID;
     public Repl (int port) {
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
         try {
@@ -117,8 +119,14 @@ public class Repl {
                         throw new Exception();
                     }
                     if (success) {
-                        gameScreen();
+                        gameScreen(true);
                         show_logged_in_options();
+                        if (playerColor.equals("w")) {
+                            this.playerColor = ChessGame.TeamColor.WHITE;
+                        } else {
+                            this.playerColor = ChessGame.TeamColor.BLACK;
+                        }
+                        currentGameID = gameID;
                     }
                 } else if (choice == 4) {
                     // Join as Observer
@@ -126,7 +134,7 @@ public class Repl {
                     int gameID = scanner.nextInt();
                     boolean success = sf.joinGame(token, gameID, null);
                     if (success) {
-                        gameScreen();
+                        gameScreen(false);
                     }
                 } else if (choice == 5) {
                     // Logout
@@ -203,7 +211,7 @@ public class Repl {
         show_logged_in_options();
     }
 
-    public void gameScreen() {
+    public void gameScreen(boolean isObserver) {
         while (true) {
             // Get the game state
             // Print the game state
@@ -214,12 +222,46 @@ public class Repl {
             int choice;
             try {
                 choice = scanner.nextInt();
-                if (choice == 4) {
-                    printGameHelp();
-                } else if (choice == 5) {
-                    break;
+                if (isObserver) {
+                    if (choice == 4) {
+                        printGameHelp();
+                    } else if (choice == 5) {
+                        currentGameID = -1;
+                        break;
+                    } else if (choice == 1) {
+                        // Move a piece
+                        System.out.println("Enter the row of the piece you want to move: ");
+                        int row = scanner.nextInt();
+                        System.out.println("Enter the column of the piece you want to move: ");
+                        String col = scanner.next();
+                        System.out.println("Enter the row of the destination: ");
+                        int destRow = scanner.nextInt();
+                        System.out.println("Enter the column of the destination: ");
+                        String destCol = scanner.next();
+                        // if destRow and destCol are on an end of the board, and the piece is a pawn, we need to get the promotion piece
+
+                        try {
+                            sf.move(token, currentGameID, row, col, destRow, destCol, this.playerColor);
+                        } catch (Exception e) {
+                            printInvalidMove(row, col, destRow, destCol);
+                        }
+                    } else if (choice == 2) {
+                        // Resign
+                        sf.resign(token, currentGameID);
+                        Thread.sleep(2000);
+                        break;
+                    } else if (choice == 3) {
+                        // Offer a draw
+                        //sf.offerDraw(token
+                    } else {
+                        System.out.println("Invalid choice. Please try again.");
+                    }
                 } else {
-                    System.out.println("Invalid choice. Please try again.");
+                    if (choice == 1) {
+                        // Exit
+                        currentGameID = -1;
+                        break;
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Invalid choice. Please try again.");
@@ -228,6 +270,10 @@ public class Repl {
             }
 
         }
+    }
+
+    private void printInvalidMove(int row, String col, int destRow, String destCol) {
+        System.out.println("Invalid move: " + row + col + " to " + destRow + destCol);
     }
 
     public void printGameHelp() {

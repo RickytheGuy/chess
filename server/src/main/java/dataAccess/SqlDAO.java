@@ -360,4 +360,47 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
         }
         return null;
     }
+
+    @Override
+    public void removeGame(Integer gameID) {
+        try {
+            try (var conn = DatabaseManager.getConnection()) {
+                var sql = "DELETE FROM game WHERE gameID = ?";
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setInt(1, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Unable to remove game: " + ex.getMessage());
+        } catch (DataAccessException ex) {
+            System.out.println("Unable to remove game: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void updateGame(Integer gameID, ChessGame game, String username, String playerColor) {
+        // Update the game, and the userName associated with the playerColor
+        try (var conn = DatabaseManager.getConnection()) {
+            var sql = "UPDATE game SET chessGame = ? WHERE gameID = ?";
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, new Gson().toJson(game));
+                preparedStatement.setInt(2, gameID);
+                preparedStatement.executeUpdate();
+            }
+            if (playerColor != null && !playerColor.isEmpty()) {
+                sql = "UPDATE game SET " + playerColor + "Username = ? WHERE gameID = ?";
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Unable to update game: " + ex.getMessage());
+        } catch (DataAccessException ex) {
+            System.out.println("Unable to update game: " + ex.getMessage());
+        }
+
+    }
 }

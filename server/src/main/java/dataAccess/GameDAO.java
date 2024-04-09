@@ -18,4 +18,8 @@ public interface GameDAO {
     ArrayList<GameData> listGames();
 
     ChessGame getGame(Integer gameId);
+
+    void removeGame(Integer gameID);
+
+    void updateGame(Integer gameID, ChessGame game, String username, String playerColor);
 }

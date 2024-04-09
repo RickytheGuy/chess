@@ -72,4 +72,14 @@ public class MemoryGameDAO implements GameDAO {
     public ChessGame getGame(Integer gameId) {
         return null;
     }
+
+    @Override
+    public void removeGame(Integer gameID) {
+
+    }
+
+    @Override
+    public void updateGame(Integer gameID, ChessGame game, String username, String playerColor) {
+
+    }
 }
