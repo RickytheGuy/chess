@@ -5,7 +5,6 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
-import org.jetbrains.annotations.NotNull;
 import requests.ErrorResponse;
 
 import java.util.ArrayList;
@@ -330,7 +329,6 @@ public class Repl {
         System.out.println(EMPTY);
     }
 
-    @NotNull
     private static String getString(ChessPiece piece) {
         String pieceString = EMPTY;
         String teamColor = SET_TEXT_COLOR_WHITE;
