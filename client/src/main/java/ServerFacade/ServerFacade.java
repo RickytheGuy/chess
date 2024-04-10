@@ -8,7 +8,6 @@ import client.Repl;
 import com.google.gson.Gson;
 import requests.*;
 import webSocketMessages.userCommands.JoinPlayerCommand;
-import webSocketMessages.userCommands.LeaveCommand;
 import webSocketMessages.userCommands.MakeMoveCommand;
 import webSocketMessages.userCommands.ResignCommand;
 
@@ -19,17 +18,16 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Map;
 
 public class ServerFacade {
-    private URI uri;
+    private final URI uri;
     public Repl repl;
 
-    private WebSocketFacade webSocketFacade;
+    private final WebSocketFacade webSocketFacade;
     public ServerFacade(int port, Repl repl)  throws Exception{
-        uri = new URI("http://localhost:" + Integer.toString(port));
+        uri = new URI("http://localhost:" + port);
         this.repl = repl;
-        webSocketFacade = new WebSocketFacade("http://localhost:"+ Integer.toString(port), this);
+        webSocketFacade = new WebSocketFacade("http://localhost:"+ port, this);
     }
     public String register(String username, String password, String email) {
         RegisterRequest request = new RegisterRequest(username, password, email);
@@ -83,7 +81,6 @@ public class ServerFacade {
     }
 
     public boolean listGames(String authToken) {
-        ListGameRequest request = new ListGameRequest();
         ListGameResponse response;
         try {
             response = makeRequest("GET", "/game", null, ListGameResponse.class, authToken);
@@ -155,7 +152,7 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             throw new Exception(String.valueOf(status));

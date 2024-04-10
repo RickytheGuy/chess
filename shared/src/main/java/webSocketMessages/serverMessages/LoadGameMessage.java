@@ -4,12 +4,12 @@ import chess.ChessBoard;
 import chess.ChessGame;
 
 public class LoadGameMessage extends ServerMessage {
-    private ChessGame game;
-    private ChessBoard board;
+    private final ChessGame game;
+
     public LoadGameMessage(ChessGame game) {
         super(ServerMessageType.LOAD_GAME);
         this.game = game;
-        this.board = game.getBoard();
+        ChessBoard board = game.getBoard();
     }
 
     @Override

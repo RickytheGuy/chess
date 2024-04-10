@@ -29,7 +29,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
               PRIMARY KEY (`id`),
               INDEX(username),
               INDEX(password)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
             """,
             """
             CREATE TABLE IF NOT EXISTS  game (
@@ -74,16 +74,13 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             var sql = "SELECT * FROM user WHERE username = ?";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 try (var resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         return new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
                     }
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to get user: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to get user: " + ex.getMessage());
         }
         return null;
@@ -104,9 +101,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to clear all: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to clear all: " + ex.getMessage());
         }
 
@@ -149,9 +144,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     return resultSet.next();
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to check if game exists: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to check if game exists: " + ex.getMessage());
         }
         return false;
@@ -199,9 +192,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     return games;
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to list games: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to list games: " + ex.getMessage());
         }
         return null;
@@ -219,9 +210,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                 preparedStatement.setString(2, username);
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to add auth: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to add auth: " + ex.getMessage());
         }
     }
@@ -278,7 +267,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Error: Unable to get user from auth: %s", ex.getMessage()));
         }
-        throw new DataAccessException(String.format("Error: Unable to get user from auth"));
+        throw new DataAccessException("Error: Unable to get user from auth");
     }
 
     @Override
@@ -295,9 +284,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                 preparedStatement.setString(3, email);
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to add user: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to add user: " + ex.getMessage());
         }
     }
@@ -313,9 +300,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     }
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to get size: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to get size: " + ex.getMessage());
         }
         return 0;
@@ -353,9 +338,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     }
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to get game: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to get game: " + ex.getMessage());
         }
         return null;
@@ -371,9 +354,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to remove game: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to remove game: " + ex.getMessage());
         }
     }
@@ -396,9 +377,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException ex) {
-            System.out.println("Unable to update game: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (SQLException | DataAccessException ex) {
             System.out.println("Unable to update game: " + ex.getMessage());
         }
 

@@ -3,7 +3,6 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import requests.ChessResponse;
 import requests.ErrorResponse;
 import requests.CreateGameRequest;

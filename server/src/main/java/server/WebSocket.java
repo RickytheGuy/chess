@@ -18,11 +18,9 @@ import java.util.ArrayList;
 @org.eclipse.jetty.websocket.api.annotations.WebSocket
 public class WebSocket {
     private final GameDAO gameData;
-    private final UserDAO userData;
     private final AuthDAO authData;
     public WebSocket(GameDAO gameData, UserDAO userData, AuthDAO authData) {
         this.gameData = gameData;
-        this.userData = userData;
         this.authData = authData;
     }
     private final ConnectionManager connectionManager = new ConnectionManager();
@@ -88,16 +86,16 @@ public class WebSocket {
         try {
             username = authData.getUserFromAuth(command.getAuthString());
             ArrayList<GameData> games = gameData.listGames();
-            for (int i = 0; i < games.size(); i++) {
-                if (games.get(i).gameID() == command.getGameID()) {
-                    if (games.get(i).blackUsername().equals(username)) {
-                        if (games.get(i).whiteUsername().equals("")) {
+            for (GameData data : games) {
+                if (data.gameID() == command.getGameID()) {
+                    if (data.blackUsername().equals(username)) {
+                        if (data.whiteUsername().equals("")) {
                             throw new Exception("Error: Cannot resign from a game with no opponent");
                         }
                         gameData.updateGame(command.getGameID(), null, "", "black");
                         break;
-                    } else if (games.get(i).whiteUsername().equals(username)) {
-                        if (games.get(i).blackUsername().equals("")) {
+                    } else if (data.whiteUsername().equals(username)) {
+                        if (data.blackUsername().isEmpty()) {
                             throw new Exception("Error: Cannot resign from a game with no opponent");
                         }
                         gameData.updateGame(command.getGameID(), null, "", "white");
@@ -137,13 +135,13 @@ public class WebSocket {
         }
         GameData gd = new GameData(0, null, null, null, null);
         ArrayList<GameData> games = gameData.listGames();
-        for (int i = 0; i < games.size(); i++) {
-            if (games.get(i).gameID() == command.getGameID()) {
-                gd = games.get(i);
-                if (game.getTeamTurn() == ChessGame.TeamColor.BLACK && games.get(i).blackUsername().equals(username)) {
+        for (GameData data : games) {
+            if (data.gameID() == command.getGameID()) {
+                gd = data;
+                if (game.getTeamTurn() == ChessGame.TeamColor.BLACK && data.blackUsername().equals(username)) {
                     break;
 
-                } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && games.get(i).whiteUsername().equals(username)) {
+                } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && data.whiteUsername().equals(username)) {
                     break;
                 } else {
                     //connectionManager.add(command.getAuthString(), session);
@@ -212,9 +210,9 @@ public class WebSocket {
         try {
             user = authData.getUserFromAuth(command.getAuthString());
             ArrayList<GameData> games = gameData.listGames();
-            for (int i = 0; i < games.size(); i++) {
-                if (games.get(i).gameID() == command.getGameID()) {
-                    if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && games.get(i).blackUsername().equals(user)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && games.get(i).whiteUsername().equals(user))) {
+            for (GameData data : games) {
+                if (data.gameID() == command.getGameID()) {
+                    if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && data.blackUsername().equals(user)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && data.whiteUsername().equals(user))) {
                         throw new Exception("Error: you are already in this game.");
                     }
                 }

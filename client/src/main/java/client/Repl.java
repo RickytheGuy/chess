@@ -5,6 +5,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
+import org.jetbrains.annotations.NotNull;
 import requests.ErrorResponse;
 
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class Repl {
     }
 
     public void printListGamesSuccess(ArrayList<GameData> games) {
-        if (games.size() == 0) {
+        if (games.isEmpty()) {
             System.out.println("No games found.\n");
             show_logged_in_options();
             return;
@@ -313,41 +314,7 @@ public class Repl {
             System.out.print(SET_BG_COLOR_LIGHT_GREY + " " + (row + 1)  + " ");
             for (int col = start; col * step <= stop; col = col + step) {
                 ChessPiece piece = board.getPieceUsingRowCol(row, col);
-                String pieceString = EMPTY;
-                String teamColor = SET_TEXT_COLOR_WHITE;
-                if (piece != null) {
-                    ChessPiece.PieceType type = piece.getPieceType();
-                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                        teamColor = SET_TEXT_COLOR_BLACK;
-                        if (type == ChessPiece.PieceType.KING) {
-                            pieceString = teamColor + BLACK_KING;
-                        } else if (type == ChessPiece.PieceType.QUEEN) {
-                            pieceString = teamColor + BLACK_QUEEN;
-                        } else if (type == ChessPiece.PieceType.BISHOP) {
-                            pieceString = teamColor + BLACK_BISHOP;
-                        } else if (type == ChessPiece.PieceType.KNIGHT) {
-                            pieceString = teamColor + BLACK_KNIGHT;
-                        } else if (type == ChessPiece.PieceType.ROOK) {
-                            pieceString = teamColor + BLACK_ROOK;
-                        } else if (type == ChessPiece.PieceType.PAWN) {
-                            pieceString = teamColor + BLACK_PAWN;
-                        }
-                    } else {
-                        if (type == ChessPiece.PieceType.KING) {
-                            pieceString = teamColor + WHITE_KING;
-                        } else if (type == ChessPiece.PieceType.QUEEN) {
-                            pieceString = teamColor + WHITE_QUEEN;
-                        } else if (type == ChessPiece.PieceType.BISHOP) {
-                            pieceString = teamColor + WHITE_BISHOP;
-                        } else if (type == ChessPiece.PieceType.KNIGHT) {
-                            pieceString = teamColor + WHITE_KNIGHT;
-                        } else if (type == ChessPiece.PieceType.ROOK) {
-                            pieceString = teamColor + WHITE_ROOK;
-                        } else if (type == ChessPiece.PieceType.PAWN) {
-                            pieceString = teamColor + WHITE_PAWN;
-                        }
-                    }
-                }
+                String pieceString = getString(piece);
                 if ((row + col) % 2 == 0) {
                     System.out.print(SET_BG_COLOR_CHESS_YELLOW + pieceString + RESET_BG_COLOR + SET_TEXT_COLOR_WHITE);
                 } else {
@@ -361,6 +328,46 @@ public class Repl {
             System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
         }
         System.out.println(EMPTY);
+    }
+
+    @NotNull
+    private static String getString(ChessPiece piece) {
+        String pieceString = EMPTY;
+        String teamColor = SET_TEXT_COLOR_WHITE;
+        if (piece != null) {
+            ChessPiece.PieceType type = piece.getPieceType();
+            if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                teamColor = SET_TEXT_COLOR_BLACK;
+                if (type == ChessPiece.PieceType.KING) {
+                    pieceString = teamColor + BLACK_KING;
+                } else if (type == ChessPiece.PieceType.QUEEN) {
+                    pieceString = teamColor + BLACK_QUEEN;
+                } else if (type == ChessPiece.PieceType.BISHOP) {
+                    pieceString = teamColor + BLACK_BISHOP;
+                } else if (type == ChessPiece.PieceType.KNIGHT) {
+                    pieceString = teamColor + BLACK_KNIGHT;
+                } else if (type == ChessPiece.PieceType.ROOK) {
+                    pieceString = teamColor + BLACK_ROOK;
+                } else if (type == ChessPiece.PieceType.PAWN) {
+                    pieceString = teamColor + BLACK_PAWN;
+                }
+            } else {
+                if (type == ChessPiece.PieceType.KING) {
+                    pieceString = teamColor + WHITE_KING;
+                } else if (type == ChessPiece.PieceType.QUEEN) {
+                    pieceString = teamColor + WHITE_QUEEN;
+                } else if (type == ChessPiece.PieceType.BISHOP) {
+                    pieceString = teamColor + WHITE_BISHOP;
+                } else if (type == ChessPiece.PieceType.KNIGHT) {
+                    pieceString = teamColor + WHITE_KNIGHT;
+                } else if (type == ChessPiece.PieceType.ROOK) {
+                    pieceString = teamColor + WHITE_ROOK;
+                } else if (type == ChessPiece.PieceType.PAWN) {
+                    pieceString = teamColor + WHITE_PAWN;
+                }
+            }
+        }
+        return pieceString;
     }
 
     public void printError(ErrorResponse error) {

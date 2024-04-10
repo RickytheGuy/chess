@@ -6,11 +6,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import requests.ChessResponse;
-import requests.RegisterRequest;
-import requests.RegisterResponse;
-import services.ClearService;
-import services.RegisterService;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataAccessTests {
@@ -83,7 +78,7 @@ public class DataAccessTests {
         }
         db.clearAll();
 
-        assert(db.listGames().size() == 0);
+        assert(db.listGames().isEmpty());
         assert(db.size() == 0);
 
     }
@@ -111,8 +106,7 @@ public class DataAccessTests {
         SqlDAO db = new SqlDAO();
         try {
             db.addGame("");
-        } catch (DataAccessException e) {
-            return;
+        } catch (DataAccessException ignored) {
         }
     }
 
@@ -142,7 +136,7 @@ public class DataAccessTests {
         int i;
         try {
             i = db.addGame("testGame");
-            assert (db.gameExists(i + 1) == false);
+            assert (!db.gameExists(i + 1));
         } catch (DataAccessException e) {
             e.printStackTrace();
             assert (false);
@@ -203,10 +197,10 @@ public class DataAccessTests {
         }
 
         assert (db.listGames().size() == 1);
-        assert (db.listGames().get(0).gameID() == i);
-        assert (db.listGames().get(0).gameName().equals("testGame"));
-        assert (db.listGames().get(0).whiteUsername().equals("testUser"));
-        assert (db.listGames().get(0).blackUsername() == null);
+        assert (db.listGames().getFirst().gameID() == i);
+        assert (db.listGames().getFirst().gameName().equals("testGame"));
+        assert (db.listGames().getFirst().whiteUsername().equals("testUser"));
+        assert (db.listGames().getFirst().blackUsername() == null);
     }
     @Test
     @Order(13)
@@ -214,7 +208,7 @@ public class DataAccessTests {
         // Setup
         SqlDAO db = new SqlDAO();
         db.clearAll();
-        assert (db.listGames().size() == 0);
+        assert (db.listGames().isEmpty());
     }
 
     @Test

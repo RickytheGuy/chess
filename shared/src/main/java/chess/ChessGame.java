@@ -296,8 +296,6 @@ public class ChessGame {
         return board;
     }
 
-    public void to_string() { board.to_string();}
-
     public void setBoard() {
         this.board = new ChessBoard();
         this.board.resetBoard();

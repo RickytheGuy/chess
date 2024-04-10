@@ -15,7 +15,7 @@ public class ChessBoard implements Cloneable{
     }
 
     @Override
-    protected ChessBoard clone() {
+    protected ChessBoard clone() throws CloneNotSupportedException {
         ChessBoard clone = new ChessBoard();
         // Perform deep copy of the 2D array
         clone.chessboard = new ChessPiece[this.chessboard.length][];

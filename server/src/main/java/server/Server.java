@@ -5,9 +5,9 @@ import handlers.*;
 import dataAccess.*;
 
 public class Server {
-    private GameDAO gameData;
-    private UserDAO userData;
-    private AuthDAO authData;
+    private final GameDAO gameData;
+    private final UserDAO userData;
+    private final AuthDAO authData;
     private final WebSocket webSocketHandler;
 
     public Server() {

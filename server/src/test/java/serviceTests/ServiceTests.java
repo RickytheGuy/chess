@@ -28,7 +28,7 @@ public class ServiceTests {
 
         ClearService clearGameService = new ClearService(gameData, userData, authData);
         clearGameService.clearAll();
-        assert(gameData.listGames().size() == 0);
+        assert(gameData.listGames().isEmpty());
         assert(userData.size() == 0);
         assert(authData.size() == 0);
 
@@ -47,7 +47,7 @@ public class ServiceTests {
         assert (((RegisterResponse) registerResponse).username() != null);
         assert (((RegisterResponse) registerResponse).authToken() != null);
         assert (((RegisterResponse) registerResponse).username().equals("testUser"));
-        assert (((RegisterResponse) registerResponse).authToken().length() > 0);
+        assert (!((RegisterResponse) registerResponse).authToken().isEmpty());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ServiceTests {
         assert(((LoginResponse) loginResponse).username() != null);
         assert(((LoginResponse) loginResponse).authToken() != null);
         assert (((LoginResponse) loginResponse).username().equals("testUser"));
-        assert (((LoginResponse) loginResponse).authToken().length() > 0);
+        assert (!((LoginResponse) loginResponse).authToken().isEmpty());
 
     }
 
@@ -224,8 +224,8 @@ public class ServiceTests {
         assert(listGamesResponse instanceof ListGameResponse);
         ArrayList<GameData> games = ((ListGameResponse) listGamesResponse).games();
         assert(games.size() == 2);
-        assert(games.get(0).gameID() == 1);
-        assert (games.get(0).gameName().equals("testGame"));
+        assert(games.getFirst().gameID() == 1);
+        assert (games.getFirst().gameName().equals("testGame"));
         assert(games.get(0).whiteUsername() == null);
         assert(games.get(0).blackUsername() == null);
         assert(games.get(1).gameID() == 2);

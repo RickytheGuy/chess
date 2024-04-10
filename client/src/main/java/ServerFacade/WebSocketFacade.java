@@ -7,15 +7,14 @@ import requests.ErrorResponse;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
-import javax.management.Notification;
 import javax.websocket.*;
 import java.net.URI;
 
 public class WebSocketFacade extends Endpoint {
     private Session session;
-    private ServerFacade serverFacade;
+    private final ServerFacade serverFacade;
 
-    public WebSocketFacade(String url, ServerFacade s) throws Exception {
+    public WebSocketFacade(String url, ServerFacade s) {
         // Initialize your WebSocket here
         try {
             serverFacade = s;
@@ -24,22 +23,19 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    // Handle message
-                    ServerMessage.ServerMessageType type = new Gson().fromJson(message, ServerMessage.class).getServerMessageType();
-                    switch (type) {
-                        case ERROR:
-                            ErrorResponse error = new Gson().fromJson(message, ErrorResponse.class);
-                            serverFacade.repl.printError(error);
-                        case LOAD_GAME:
-                            // Implement this method
-                            LoadGameMessage m = new Gson().fromJson(message, LoadGameMessage.class);
-                            ChessGame game = m.getGame();
-                            serverFacade.repl.drawChessboard(game);
-                            break;
-                    }
+            this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+                // Handle message
+                ServerMessage.ServerMessageType type = new Gson().fromJson(message, ServerMessage.class).getServerMessageType();
+                switch (type) {
+                    case ERROR:
+                        ErrorResponse error = new Gson().fromJson(message, ErrorResponse.class);
+                        serverFacade.repl.printError(error);
+                    case LOAD_GAME:
+                        // Implement this method
+                        LoadGameMessage m = new Gson().fromJson(message, LoadGameMessage.class);
+                        ChessGame game = m.getGame();
+                        serverFacade.repl.drawChessboard(game);
+                        break;
                 }
             }
             );

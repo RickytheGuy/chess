@@ -687,32 +687,32 @@ public class WebSocketTests {
 
     private void assertLoadGameMessage(List<TestModels.TestMessage> messages) {
         Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.LOAD_GAME, messages.get(0).serverMessageType,
+        Assertions.assertEquals(TestModels.TestServerMessageType.LOAD_GAME, messages.getFirst().serverMessageType,
                 "Message was not a LOAD_GAME message");
-        Assertions.assertNotNull(messages.get(0).game, "LOAD_GAME message did not contain a game");
+        Assertions.assertNotNull(messages.getFirst().game, "LOAD_GAME message did not contain a game");
     }
 
 
     private void assertNotificationMessage(List<TestModels.TestMessage> messages) {
         Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.NOTIFICATION, messages.get(0).serverMessageType,
+        Assertions.assertEquals(TestModels.TestServerMessageType.NOTIFICATION, messages.getFirst().serverMessageType,
                 "Message was not a NOTIFICATION message");
-        Assertions.assertNotNull(messages.get(0).message, "Bobs NOTIFICATION message did not contain a message");
+        Assertions.assertNotNull(messages.getFirst().message, "Bobs NOTIFICATION message did not contain a message");
     }
 
 
     private void assertErrorMessage(List<TestModels.TestMessage> messages) {
         Assertions.assertEquals(1, messages.size(), "Expected 1 message, got " + messages.size());
-        Assertions.assertEquals(TestModels.TestServerMessageType.ERROR, messages.get(0).serverMessageType,
+        Assertions.assertEquals(TestModels.TestServerMessageType.ERROR, messages.getFirst().serverMessageType,
                 "Message was not an ERROR message");
-        Assertions.assertNull(messages.get(0).game, "ERROR message contained a game");
-        Assertions.assertNotNull(messages.get(0).errorMessage, "ERROR message did not contain an error message");
+        Assertions.assertNull(messages.getFirst().game, "ERROR message contained a game");
+        Assertions.assertNotNull(messages.getFirst().errorMessage, "ERROR message did not contain an error message");
     }
 
 
     private void assertMoveMadePair(List<TestModels.TestMessage> messages) {
         Assertions.assertEquals(2, messages.size(), "Expected 2 messages, got " + messages.size());
-        boolean isLoadGameFirst = messages.get(0).serverMessageType == TestModels.TestServerMessageType.LOAD_GAME;
+        boolean isLoadGameFirst = messages.getFirst().serverMessageType == TestModels.TestServerMessageType.LOAD_GAME;
         Assertions.assertEquals(TestModels.TestServerMessageType.LOAD_GAME,
                 messages.get(isLoadGameFirst ? 0 : 1).serverMessageType, "Didn't get load game message");
         Assertions.assertNotNull(messages.get(isLoadGameFirst ? 0 : 1).game, "LOAD_GAME message didn't contain a game");
