@@ -196,6 +196,6 @@ public class ServerFacade {
     public void resign(String token, int gameID) {
         // Resign from a game
         webSocketFacade.send(new Gson().toJson(new ResignCommand(token, gameID)));
-        webSocketFacade.send(new Gson().toJson(new LeaveCommand(token)));
+        // webSocketFacade.send(new Gson().toJson(new LeaveCommand(token, gameID)));
     }
 }
