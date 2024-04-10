@@ -71,14 +71,12 @@ public class WebSocket {
     private void resign(Session session, ResignCommand command) throws IOException {
         try {authData.getUserFromAuth(command.getAuthString());
         } catch (Exception e) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError(e.getMessage()));
             return;
         }
 
         ChessGame game = gameData.getGame(command.getGameID());
         if (game == null) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError("Error: Game does not exist."));
             return;
         }
@@ -89,7 +87,7 @@ public class WebSocket {
             for (GameData data : games) {
                 if (data.gameID() == command.getGameID()) {
                     if (data.blackUsername().equals(username)) {
-                        if (data.whiteUsername().equals("")) {
+                        if (data.whiteUsername().isEmpty()) {
                             throw new Exception("Error: Cannot resign from a game with no opponent");
                         }
                         gameData.updateGame(command.getGameID(), null, "", "black");
@@ -106,13 +104,11 @@ public class WebSocket {
                 }
             }
 
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new ServerNotification(username + " has resigned"));
             connectionManager.broadcast(command.getAuthString(), new ServerNotification(username + " has resigned"), command.getGameID());
 
             connectionManager.remove(command.getAuthString());
         } catch (Exception e) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError(e.getMessage()));
         }
     }
@@ -122,14 +118,12 @@ public class WebSocket {
         try {authData.getUserFromAuth(command.getAuthString());
             username = authData.getUserFromAuth(command.getAuthString());
         } catch (Exception e) {
-            //connectionManager.add(command.getAuthString(), session, int);
             connectionManager.send(command.getAuthString(), new SeverError(e.getMessage()));
             return;
         }
 
         ChessGame game = gameData.getGame(command.getGameID());
         if (game == null) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError("Error: Game does not exist."));
             return;
         }
@@ -144,7 +138,6 @@ public class WebSocket {
                 } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && data.whiteUsername().equals(username)) {
                     break;
                 } else {
-                    //connectionManager.add(command.getAuthString(), session);
                     connectionManager.send(command.getAuthString(), new SeverError("Cannot make a move for the opponent."));
                     return;
                 }
@@ -160,7 +153,6 @@ public class WebSocket {
             gameData.updateGame(command.getGameID(), game, gd.blackUsername(), "black");
             if (game.isInCheckmate(ChessGame.TeamColor.BLACK) || game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK) || game.isInStalemate(ChessGame.TeamColor.WHITE)) {
                 gameData.removeGame(command.getGameID());
-                //connectionManager.add(command.getAuthString(), session);
                 LoadGameMessage game_response = new LoadGameMessage(game);
                 connectionManager.send(command.getAuthString(), game_response);
                 connectionManager.broadcast(command.getAuthString(), game_response, command.getGameID());
@@ -168,11 +160,9 @@ public class WebSocket {
                 return;
             }
         } catch (Exception e) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError("Invalid move"));
             return;
         }
-        //connectionManager.add(command.getAuthString(), session);
         LoadGameMessage game_response = new LoadGameMessage(game);
         connectionManager.send(command.getAuthString(), game_response);
         connectionManager.broadcast(command.getAuthString(), game_response, command.getGameID());
@@ -189,11 +179,9 @@ public class WebSocket {
 
         ChessGame game = gameData.getGame(command.getGameID());
         if (game == null) {
-            //connectionManager.add(command.getAuthString(), session);
             connectionManager.send(command.getAuthString(), new SeverError("Error: Game does not exist."));
             return;
         }
-        //connectionManager.add(command.getAuthString(), session);
         LoadGameMessage game_response = new LoadGameMessage(game);
         connectionManager.send(command.getAuthString(), game_response);
         connectionManager.broadcast(command.getAuthString(), new ServerNotification("An observer has joined the game"), command.getGameID());
@@ -222,7 +210,6 @@ public class WebSocket {
             return;
         }
         LoadGameMessage game_response = new LoadGameMessage(game);
-        //connectionManager.add(command.getAuthString(), session);
         connectionManager.send(command.getAuthString(), game_response);
         connectionManager.broadcast(command.getAuthString(), new ServerNotification(user + " joined the game"), command.getGameID());
     }
