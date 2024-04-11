@@ -8,6 +8,7 @@ import client.Repl;
 import com.google.gson.Gson;
 import requests.*;
 import webSocketMessages.userCommands.JoinPlayerCommand;
+import webSocketMessages.userCommands.LeaveCommand;
 import webSocketMessages.userCommands.MakeMoveCommand;
 import webSocketMessages.userCommands.ResignCommand;
 
@@ -95,12 +96,8 @@ public class ServerFacade {
     public boolean joinGame(String authToken, int gameID, String playerColor) {
         JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
         JoinGameResponse response;
-        ChessGame.TeamColor p;
-        if (playerColor.equals("w")) {
-            p = ChessGame.TeamColor.WHITE;
-        }  else if (playerColor.equals("b")) {
-            p = ChessGame.TeamColor.BLACK;
-        } else {
+        ChessGame.TeamColor p = ChessGame.TeamColor.WHITE;;
+        if (playerColor == null) {
             try {
                 webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, null)));
                 response = makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
@@ -110,8 +107,12 @@ public class ServerFacade {
                 repl.printJoinGameFail(gameID);
                 return false;
             }
-
+        } else if (playerColor.equals("WHITE")) {
+            p = ChessGame.TeamColor.WHITE;
+        }  else if (playerColor.equals("BLACK")) {
+            p = ChessGame.TeamColor.BLACK;
         }
+
         try {
             webSocketFacade.send(new Gson().toJson(new JoinPlayerCommand(authToken, gameID, p)));
             response = makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
@@ -193,6 +194,25 @@ public class ServerFacade {
     public void resign(String token, int gameID) {
         // Resign from a game
         webSocketFacade.send(new Gson().toJson(new ResignCommand(token, gameID)));
-        // webSocketFacade.send(new Gson().toJson(new LeaveCommand(token, gameID)));
+    }
+
+    public void leaveGame(String token, int currentGameID) {
+        webSocketFacade.send(new Gson().toJson(new LeaveCommand(token, currentGameID)));
+        repl.setGame(null);
+    }
+
+    public void clearGames(String authToken) {
+        // Make a http request to clear all games
+        try {
+            makeRequest("DELETE", "/session", null, null, authToken);
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public void loadGame(String token, int gameID) {
+        // Load a game
+        webSocketFacade.send(new Gson().toJson(new webSocketMessages.userCommands.LoadGameCommand(token, gameID)));
     }
 }

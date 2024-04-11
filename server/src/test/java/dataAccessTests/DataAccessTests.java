@@ -197,10 +197,10 @@ public class DataAccessTests {
         }
 
         assert (db.listGames().size() == 1);
-        assert (db.listGames().getFirst().gameID() == i);
-        assert (db.listGames().getFirst().gameName().equals("testGame"));
-        assert (db.listGames().getFirst().whiteUsername().equals("testUser"));
-        assert (db.listGames().getFirst().blackUsername() == null);
+        assert (db.listGames().get(0).gameID() == i);
+        assert (db.listGames().get(0).gameName().equals("testGame"));
+        assert (db.listGames().get(0).whiteUsername().equals("testUser"));
+        assert (db.listGames().get(0).blackUsername() == null);
     }
     @Test
     @Order(13)

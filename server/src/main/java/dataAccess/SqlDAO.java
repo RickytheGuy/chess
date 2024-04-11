@@ -112,7 +112,6 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
         try (var conn = DatabaseManager.getConnection()) {
             // add both the game and create a new chess game for it
             var sql = "INSERT INTO game (gameName, chessGame) VALUES (?, ?)";
-//            var sql = "INSERT INTO game (gameName) VALUES (?)";
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, gameName);
                 ChessGame g = new ChessGame();
@@ -187,7 +186,7 @@ public class SqlDAO implements UserDAO, GameDAO, AuthDAO{
                 try (var resultSet = preparedStatement.executeQuery()) {
                     var games = new ArrayList<GameData>();
                     while (resultSet.next()) {
-                        games.add(new GameData(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), null));
+                        games.add(new GameData(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), resultSet.getString("chessGame") == null ? null : new Gson().fromJson(resultSet.getString("chessGame"), ChessGame.class)));
                     }
                     return games;
                 }

@@ -44,7 +44,20 @@ public class WebSocket {
             case RESIGN:
                 resign(session, new Gson().fromJson(message, ResignCommand.class));
                 break;
+            case LOAD_GAME:
+                load_game(session, new Gson().fromJson(message, LoadGameCommand.class));
+                break;
         }
+    }
+
+    private void load_game(Session session, LoadGameCommand fromJson) throws IOException {
+        ChessGame game = gameData.getGame(fromJson.getGameID());
+        if (game == null) {
+            connectionManager.send(fromJson.getAuthString(), new SeverError("Error: Game does not exist."));
+            return;
+        }
+        LoadGameMessage game_response = new LoadGameMessage(game);
+        connectionManager.send(fromJson.getAuthString(), game_response);
     }
 
     private void leave(Session session, LeaveCommand command) throws IOException {
@@ -90,13 +103,13 @@ public class WebSocket {
                         if (data.whiteUsername().isEmpty()) {
                             throw new Exception("Error: Cannot resign from a game with no opponent");
                         }
-                        gameData.updateGame(command.getGameID(), null, "", "black");
+                        gameData.updateGame(command.getGameID(), null, username, "black");
                         break;
                     } else if (data.whiteUsername().equals(username)) {
                         if (data.blackUsername().isEmpty()) {
                             throw new Exception("Error: Cannot resign from a game with no opponent");
                         }
-                        gameData.updateGame(command.getGameID(), null, "", "white");
+                        gameData.updateGame(command.getGameID(), null, username, "white");
                         break;
                     } else {
                         throw new Exception("Error: Observer cannot resign");
@@ -200,7 +213,7 @@ public class WebSocket {
             ArrayList<GameData> games = gameData.listGames();
             for (GameData data : games) {
                 if (data.gameID() == command.getGameID()) {
-                    if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && data.blackUsername().equals(user)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && data.whiteUsername().equals(user))) {
+                    if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && data.blackUsername() != null && data.blackUsername().equals(user)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && data.whiteUsername() != null && data.whiteUsername().equals(user))) {
                         throw new Exception("Error: you are already in this game.");
                     }
                 }

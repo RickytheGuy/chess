@@ -34,7 +34,7 @@ public class WebSocketFacade extends Endpoint {
                         // Implement this method
                         LoadGameMessage m = new Gson().fromJson(message, LoadGameMessage.class);
                         ChessGame game = m.getGame();
-                        serverFacade.repl.drawChessboard(game);
+                        serverFacade.repl.setGame(game);
                         break;
                 }
             }

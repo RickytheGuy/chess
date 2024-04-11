@@ -1,16 +1,11 @@
 package client;
 
 import ServerFacade.ServerFacade;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import model.GameData;
 import requests.ErrorResponse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -19,6 +14,7 @@ public class Repl {
     private String token;
     private boolean white = true;
     private ChessGame.TeamColor playerColor;
+    private ChessGame currentGame = null;
     private int currentGameID;
     public Repl (int port) {
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
@@ -112,21 +108,20 @@ public class Repl {
                     boolean success = false;
                     if (playerColor.equals("w") ) {
                         success = sf.joinGame(token, gameID, "WHITE");
+                        this.playerColor = ChessGame.TeamColor.WHITE;
                     } else if (playerColor.equals("b")) {
                         success = sf.joinGame(token, gameID, "BLACK");
+                        this.playerColor = ChessGame.TeamColor.BLACK;
                         white = false;
                     } else {
                         throw new Exception();
                     }
                     if (success) {
-                        gameScreen(true);
-                        show_logged_in_options();
-                        if (playerColor.equals("w")) {
-                            this.playerColor = ChessGame.TeamColor.WHITE;
-                        } else {
-                            this.playerColor = ChessGame.TeamColor.BLACK;
-                        }
                         currentGameID = gameID;
+                        sf.loadGame(token, gameID);
+                        Thread.sleep(1000);
+                        gameScreen(false);
+                        show_logged_in_options();
                     }
                 } else if (choice == 4) {
                     // Join as Observer
@@ -134,10 +129,12 @@ public class Repl {
                     int gameID = scanner.nextInt();
                     boolean success = sf.joinGame(token, gameID, null);
                     if (success) {
-                        gameScreen(false);
+                        gameScreen(true);
+                        show_logged_in_options();
                     }
                 } else if (choice == 5) {
                     // Logout
+
                     if (sf.logout(token)) {
                         break;
                     }
@@ -148,7 +145,7 @@ public class Repl {
                     System.out.println("Invalid choice. Please try again.");
                 }
             } catch (Exception e) {
-                System.out.println("Invalid choice. Please try again.");
+                e.printStackTrace();
                 show_logged_in_options();
                 scanner.nextLine();
             }
@@ -191,7 +188,11 @@ public class Repl {
         }
         System.out.println("Games: ");
         for (GameData game : games) {
-            System.out.println("ID: " + game.gameID() + " Name: " + game.gameName() + "White: " + game.whiteUsername() + " Black: " + game.blackUsername());
+            if (game.game() == null) {
+                System.out.println("\tID: " + game.gameID() + " Name: " + game.gameName() + " White: " + game.whiteUsername() + " Black: " + game.blackUsername() + " Game is over");
+            } else {
+                System.out.println("\tID: " + game.gameID() + " Name: " + game.gameName() + " White: " + game.whiteUsername() + " Black: " + game.blackUsername());
+            }
         }
         System.out.println();
         show_logged_in_options();
@@ -213,55 +214,53 @@ public class Repl {
 
     public void gameScreen(boolean isObserver) {
         while (true) {
-            // Get the game state
-            // Print the game state
-            // Get the move
-            // Send the move
+            drawChessboard(currentGame);
             printGameHelp();
             Scanner scanner = new Scanner(System.in);
             int choice;
             try {
                 choice = scanner.nextInt();
-                if (isObserver) {
-                    if (choice == 4) {
-                        printGameHelp();
-                    } else if (choice == 5) {
-                        currentGameID = -1;
-                        break;
-                    } else if (choice == 1) {
-                        // Move a piece
-                        System.out.println("Enter the row of the piece you want to move: ");
-                        int row = scanner.nextInt();
-                        System.out.println("Enter the column of the piece you want to move: ");
-                        String col = scanner.next();
-                        System.out.println("Enter the row of the destination: ");
-                        int destRow = scanner.nextInt();
-                        System.out.println("Enter the column of the destination: ");
-                        String destCol = scanner.next();
-                        // if destRow and destCol are on an end of the board, and the piece is a pawn, we need to get the promotion piece
+                if (!isObserver && choice == 1) {
+                    // Move a piece
+                    System.out.println("Enter the row of the piece you want to move: ");
+                    int row = scanner.nextInt();
+                    System.out.println("Enter the column of the piece you want to move: ");
+                    String col = scanner.next();
+                    System.out.println("Enter the row of the destination: ");
+                    int destRow = scanner.nextInt();
+                    System.out.println("Enter the column of the destination: ");
+                    String destCol = scanner.next();
 
-                        try {
-                            sf.move(token, currentGameID, row, col, destRow, destCol, this.playerColor);
-                        } catch (Exception e) {
-                            printInvalidMove(row, col, destRow, destCol);
-                        }
-                    } else if (choice == 2) {
-                        // Resign
-                        sf.resign(token, currentGameID);
-                        Thread.sleep(2000);
-                        break;
-                    } else if (choice == 3) {
-                        // Offer a draw
-                        //sf.offerDraw(token
-                    } else {
-                        System.out.println("Invalid choice. Please try again.");
+                    try {
+                        sf.move(token, currentGameID, row, col, destRow, destCol, this.playerColor);
+                    } catch (Exception e) {
+                        printInvalidMove(row, col, destRow, destCol);
                     }
-                } else {
-                    if (choice == 1) {
-                        // Exit
-                        currentGameID = -1;
-                        break;
-                    }
+                } else if (!isObserver && choice == 2) {
+                    // Resign
+                    sf.resign(token, currentGameID);
+                    Thread.sleep(2000);
+                } else if (choice == 3) {
+                    // Redraw board
+                    drawChessboard(currentGame);
+                } else if (choice == 4) {
+                    // Leave game
+                    sf.leaveGame(token, currentGameID);
+                    currentGameID = -1;
+                    break;
+                } else if (choice == 5) {
+                    printGameHelp();
+                } else if (choice == 6) {
+                    // Show legal moves
+                    System.out.println("Enter the row of the piece you want to move: ");
+                    int row = scanner.nextInt();
+                    System.out.println("Enter the column of the piece you want to move: ");
+                    String col = scanner.next();
+                    ArrayList<ChessMove> moves = (ArrayList<ChessMove>)currentGame.validMoves(new ChessPosition(row, col.charAt(0)));
+                    drawChessboardWithMoves(currentGame, moves);
+                }
+                else {
+                    System.out.println("Invalid choice. Please try again.");
                 }
             } catch (Exception e) {
                 System.out.println("Invalid choice. Please try again.");
@@ -272,16 +271,62 @@ public class Repl {
         }
     }
 
+    private void drawChessboardWithMoves(ChessGame currentGame, ArrayList<ChessMove> moves) {
+        ChessBoard board = currentGame.getBoard();
+        board.resetBoard();
+        System.out.print(ERASE_SCREEN + SET_BG_COLOR_LIGHT_GREY + EMPTY + SET_TEXT_COLOR_WHITE);
+
+        ArrayList<String> letters = new ArrayList<>(List.of("h", "g", "f", "e", "d", "c", "b", "a"));
+        int start = 0;
+        int stop = 7;
+        int step =1;
+        if (white) {
+            Collections.reverse(letters);
+            start = stop;
+            stop = 0;
+            step = -1;
+        }
+        for (String letter : letters) {
+            System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
+        }
+        System.out.println(EMPTY);
+        String yellow = SET_BG_COLOR_CHESS_YELLOW;
+        String green = SET_BG_COLOR_CHESSGREEN;
+        for (int row = start; row * step <= stop; row = row + step) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + " " + (row + 1)  + " ");
+            for (int col = start; col * step <= stop; col = col + step) {
+                for (ChessMove move : moves) {
+                    if (move.getEndPosition().getRow() == row && move.getEndPosition().getColumn() == col) {
+                        yellow = SET_BG_COLOR_YELLOW;
+                        green = SET_BG_COLOR_GREEN;
+                    }
+                }
+                ChessPiece piece = board.getPieceUsingRowCol(row, col);
+                String pieceString = getString(piece);
+                if ((row + col) % 2 == 0) {
+                    System.out.print(yellow + pieceString + RESET_BG_COLOR + SET_TEXT_COLOR_WHITE);
+                } else {
+                    System.out.print(green + pieceString + RESET_BG_COLOR+ SET_TEXT_COLOR_WHITE);
+                }
+                yellow = SET_BG_COLOR_CHESS_YELLOW;
+                green = SET_BG_COLOR_CHESSGREEN;
+            }
+            System.out.println(SET_BG_COLOR_LIGHT_GREY +  " " + (row + 1) + " ");
+        }
+        System.out.print(EMPTY + SET_TEXT_COLOR_WHITE);
+        for (String letter : letters) {
+            System.out.print("\u2004\u2004" + letter + "\u2004\u2004\u2004");
+        }
+        System.out.println(EMPTY);
+    }
+
     private void printInvalidMove(int row, String col, int destRow, String destCol) {
         System.out.println("Invalid move: " + row + col + " to " + destRow + destCol);
     }
 
     public void printGameHelp() {
-//        System.out.println("1. Move a piece");
-//        System.out.println("2. Resign");
-//        System.out.println("3. Offer a draw");
-        System.out.println("4. Help");
-        System.out.println("5. Quit");
+        System.out.println("1. Move a piece\t2. Resign\t3. Redraw board");
+        System.out.println("4. Leave\t\t5. Help\t\t6. Show legal moves");
         System.out.println("Please enter the number of your choice: ");
     }
 
@@ -291,6 +336,10 @@ public class Repl {
     }
 
     public void drawChessboard(ChessGame game) {
+        if (game == null) {
+            System.out.println("Cannot draw board. Game is null.");
+            return;
+        }
         ChessBoard board = game.getBoard();
         board.resetBoard();
         System.out.print(ERASE_SCREEN + SET_BG_COLOR_LIGHT_GREY + EMPTY + SET_TEXT_COLOR_WHITE);
@@ -374,5 +423,9 @@ public class Repl {
 
     public void printObserverJoinGameSuccess(int gameID) {
         System.out.println("Joined game " + gameID + " as an observer.");
+    }
+
+    public void setGame(ChessGame game) {
+        this.currentGame = game;
     }
 }
